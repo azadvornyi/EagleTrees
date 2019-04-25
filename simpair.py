@@ -359,19 +359,18 @@ tiq, t_infall, t_quench, first_approach_r = t_infall_and_quench(host_r_vir['r_vi
 
 # print(t_infall,"infall time")
 # print(t_quench,'t_quench')
-print(tiq,'t_quench -  t_infall, Gyr')
+print(t_infall,'t_infall, Gyr')
 print(data['ms'][0],'M_solar @ z = 0')
 
 sat_mass = data['ms'][0]
 
 # checking if the host became a satellite of itself
-if (tree_host['copx'][0] - tree_sat['copx'][0]) == 0:
-    pass
-else:
-    f = open("data_plot_run2.txt", "a")
-    f.write("{0:.0f} {1:.0f} {2:} {3:} {4:}\n".format(host_mass, sat_mass,
-                                                 t_infall, t_quench, data['ssfr'][0]))
+if (t_infall) == 0:
+    f = open("search_for_zeros.txt", "a")
+    f.write("{0:.0f} {1:.0f} {2:} {3:} {4:} {5:} {6:}\n".format(host_mass, sat_mass,
+                                                      t_infall, t_quench, data['ssfr'][0]), sat_index, host_index)
     f.close()
+
 
 
 this_sat_id = sat_index
