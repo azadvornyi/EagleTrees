@@ -31,7 +31,7 @@ host_index = int(argv[1]) # select host here
 
 sat_index = int(argv[2])  # select satellite here
 
-
+#34
 
 #  selecting hosts above given mass
 host_query = "SELECT \
