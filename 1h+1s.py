@@ -12,7 +12,7 @@ sim25 = 'RefL0025N0376'
 fof1 = 2
 sub1 = 7
 #============
-sim = sim100  # set simulation here
+sim = sim25  # set simulation here
 #============
 
 if sim == sim100:
@@ -24,7 +24,7 @@ else:
 
 con = sql.connect('twh176', password='tt408GS2')
 
-host_index = 4  # select host here
+host_index = 2  # select host here
 sat_index = 0   # select satellite here
 
 
@@ -356,12 +356,16 @@ print(data['ms'][0],'M_solar @ z = 0')
 
 
 # checking if the host became a satellite of itself
-if (tree_host['copx'][0] - tree_sat['copx'][0]) == 0:
-    datapair = (0, 0)
-else:
-    datapair = (data['ms'][0],tiq)
+# if (tree_host['copx'][0] - tree_sat['copx'][0]) == 0:
+#     datapair = (0, 0)
+# else:
+#     datapair = (data['ms'][0],tiq)
+#
+# print(datapair)
 
-print(datapair)
+
+print(t_infall,'t_infall')
+print(t_quench,"t_quench")
 
 
 plt.plot(time_z, radius)
