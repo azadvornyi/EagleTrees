@@ -1,5 +1,8 @@
 #!/bin/bash
 
+trap "echo Goodbye..." EXIT
+
+
 for (( c=0; c<36; c++ ))
 do
    python3 dummy1.py $c

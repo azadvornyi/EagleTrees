@@ -269,7 +269,6 @@ def moving_to_origin(host, sat, box, r):
     t_infall = np.array([])
     r_vir = np.array([])
     halfbox = box/2
-    eh = True
     for i in reversed(range(len(sat))):
         for j in reversed(range(len(host))):
 

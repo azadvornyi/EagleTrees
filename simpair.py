@@ -264,7 +264,7 @@ def moving_to_origin(host, sat, box, r):
     first_approach = np.array([])
     t_infall = np.array([])
     r_vir = np.array([])
-    eh = True
+
     halfbox = box/2
     for i in reversed(range(len(sat))):
         for j in reversed(range(len(host))):
@@ -272,26 +272,29 @@ def moving_to_origin(host, sat, box, r):
             if sat['z'][i] == host['z'][j]:
                 a = 1/(1+host['z'][j])
 
-                x = sat['copx'][i] - host['copx'][j]
+                scaled_halfbox = halfbox * a
+                scaled_box = box * a
+
+                x = host['copx'][j] - sat['copx'][i]
                 x = x * a
-                if x < -halfbox:
-                    x = x + box
-                elif x > halfbox:
-                    x = x - box
+                if x < -scaled_halfbox:
+                    x = x + scaled_box
+                elif x > scaled_halfbox:
+                    x = x - scaled_box
 
-                y = sat['copy'][i] - host['copy'][j]
+                y = host['copy'][j] - sat['copy'][i]
                 y = y * a
-                if y < -halfbox:
-                    y = y + box
-                elif y > halfbox:
-                    y = y - box
+                if y < -scaled_halfbox:
+                    y = y + scaled_box
+                elif y > scaled_halfbox:
+                    y = y - scaled_box
 
-                z = sat['copz'][i] - host['copz'][j]
+                z = host['copz'][j] - sat['copz'][i]
                 z = z * a
-                if z < -halfbox:
-                    z = z + box
-                elif z > halfbox:
-                    z = z - box
+                if z < -scaled_halfbox:
+                    z = z + scaled_box
+                elif z > scaled_halfbox:
+                    z = z - scaled_box
 
                 dist = np.sqrt(x**2 +y**2+z**2)
 
