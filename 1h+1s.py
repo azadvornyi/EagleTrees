@@ -98,6 +98,7 @@ def edge_proximity(host_info,box_size): # copy this
 
 host_on_edge = edge_proximity(host_ids, box_size)# copy this
 
+print(host_on_edge,"this is host on edge")
 
 # satellite selection around a host at z = 0. Hosts close to the wall of the box are handled as well
 normal_sat_query= 'SELECT \
