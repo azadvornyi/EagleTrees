@@ -25,7 +25,7 @@ else:
 con = sql.connect('twh176', password='tt408GS2')
 
 host_index = 2  # select host here
-sat_index = 0   # select satellite here
+sat_index = 1   # select satellite here
 
 
 
@@ -207,6 +207,7 @@ tree_sat = sql.execute_query(con, tree_sat_query)
 
 data = tree_sat
 
+
 #print(np.sqrt((tree_host['copx'][0] - tree_sat['copx'][0])**2 + (tree_host['copy'][0] - tree_sat['copy'][0])**2 + (tree_host['copz'][0] - tree_sat['copz'][0])**2))
 print((tree_host['copx'][0] - tree_sat['copx'][0]))
 
@@ -236,6 +237,16 @@ host_r_vir_query = 'SELECT \
 host_r_vir = sql.execute_query(con, host_r_vir_query)
 
 
+print("Host coordinates")
+print(tree_host['copx'][-1],tree_host['copy'][-1],tree_host['copz'][-1])
+print("="*20)
+print("Sat coordinates")
+print(tree_sat['copx'][-1],tree_sat['copy'][-1],tree_sat['copz'][-1])
+print("R_vir")
+print(sats_info['r_vir'][-1])
+print(host_r_vir['r_vir'])
+
+print(sats_info)
 # converting z to Gyr
 def times_Gyr(z):
     H0 = 67.77
@@ -257,35 +268,37 @@ def moving_to_origin(host, sat, box, r):
     first_approach = np.array([])
     t_infall = np.array([])
     r_vir = np.array([])
+    halfbox = box/2
     eh = True
     for i in reversed(range(len(sat))):
         for j in reversed(range(len(host))):
 
             if sat['z'][i] == host['z'][j]:
                 a = 1/(1+host['z'][j])
-
-                x = sat['copx'][i] - host['copx'][j]
+                scaled_halfbox = halfbox * a
+                scaled_box = box * a
+                x = host['copx'][j] - sat['copx'][i]
                 x = x * a
-                if x < -box/2:
-                    x = x + box
-                elif x > box/2:
-                    x = x - box
+                if x < -scaled_halfbox:
+                    x = x + scaled_box
+                elif x > scaled_halfbox:
+                    x = x - scaled_box
 
-                y = sat['copy'][i] - host['copy'][j]
+                y = host['copy'][j] - sat['copy'][i]
                 y = y * a
-                if y < -box/2:
-                    y = y + box
-                elif y > box/2:
-                    y = y - box
+                if y < -scaled_halfbox:
+                    y = y + scaled_box
+                elif y > scaled_halfbox:
+                    y = y - scaled_box
 
-                z = sat['copz'][i] - host['copz'][j]
+                z = host['copz'][j] - sat['copz'][i]
                 z = z * a
-                if z < -box/2:
-                    z = z + box
-                elif z > box/2:
-                    z = z - box
+                if z < -scaled_halfbox:
+                    z = z + scaled_box
+                elif z > scaled_halfbox:
+                    z = z - scaled_box
 
-                dist = np.sqrt(x**2 +y**2+z**2)
+                dist = np.sqrt(x**2 + y**2 + z**2)
 
                 r_vir = np.append(r_vir, r[i])
                 distances = np.append(distances,dist)
@@ -376,10 +389,13 @@ plt.vlines(t_infall,0, 1)
 plt.savefig('dist.pdf', format ='pdf')
 plt.clf()
 
-# #print(data['sns'])
+# #print(data['sns']) tree_host
 plt.plot(data['z'], data['copx'], '-r')
 plt.plot(data['z'], data['copy'], '-g')
 plt.plot(data['z'], data['copz'], '-b')
+plt.plot(tree_host['z'], tree_host['copx'], '-o')
+plt.plot(tree_host['z'], tree_host['copy'], 'olive')
+plt.plot(tree_host['z'], tree_host['copz'], 'cyan')
 plt.savefig('cop.pdf')
 
 plt.clf()

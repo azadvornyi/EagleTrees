@@ -369,7 +369,7 @@ if (tree_host['copx'][0] - tree_sat['copx'][0]) == 0:
     pass
 else:
     f = open("data_plot_run2.txt", "a")
-    f.write("{0:.0f} {1:.0f} {2:} {3:} {4:}\n".format(host_mass, sat_mass,
+    f.write("{0:.0f} {1:.0f} {2:} {3:} {4:} {5:} {6:}\n".format(host_index, sat_index, host_mass, sat_mass,
                                                  t_infall, t_quench, data['ssfr'][0]))
     f.close()
 
