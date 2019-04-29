@@ -72,17 +72,17 @@ def edge_proximity(host_info,box_size): # copy this
         x,y,z = 0,0,0
         r_vir = host['r_vir']*0.0025
         if (host['copx'] - r_vir < 0):
-            x = box_size /2
+            x = box_size
         elif (host['copx'] + r_vir > box_size):
-            x = -box_size/2
+            x = -box_size
         elif (host['copy'] - r_vir < 0) :
-            y = box_size/2
+            y = box_size
         elif (host['copy'] + r_vir > box_size):
-            x = -box_size/2
+            x = -box_size
         elif (host['copz'] - r_vir < 0) :
-            z = box_size/2
+            z = box_size
         elif (host['copz'] + r_vir > box_size):
-            z = -box_size/2
+            z = -box_size
 
         gid = np.append(gid, host['gid'])
         fof = np.append(fof, host['fof'])
@@ -112,12 +112,12 @@ normal_sat_query= 'SELECT \
              WHERE \
              H.GalaxyID = {1:.0f} \
              and H.GroupID = FOF.GroupID \
-             and 0.0025*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_x  + {2:.0f} - (S.CentreOfPotential_x+{2:.0f} - FLOOR((S.CentreOfPotential_x+{2:.0f})/ {5:.0f}))) \
-             and 0.0025*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_y  + {3:.0f} - (S.CentreOfPotential_y+{3:.0f} - FLOOR((S.CentreOfPotential_y+{3:.0f})/ {5:.0f}))) \
-             and 0.0025*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_z  + {4:.0f} - (S.CentreOfPotential_z+{4:.0f} - FLOOR((S.CentreOfPotential_z+{4:.0f})/ {5:.0f}))) \
+             and 0.0025*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_x  + {2:.0f} - S.CentreOfPotential_x ) \
+             and 0.0025*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_y  + {3:.0f} - S.CentreOfPotential_y) \
+             and 0.0025*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_z  + {4:.0f} - S.CentreOfPotential_z) \
              and S.Snapnum = 28 \
              and S.MassType_Star between 1E9 and 1E12'.format(sim, host_on_edge['gid'][he_index], host_on_edge['dx'][he_index],
-                                                              host_on_edge['dy'][he_index],host_on_edge['dz'][he_index],box_size)
+                                                              host_on_edge['dy'][he_index],host_on_edge['dz'][he_index])
 sats_info = sql.execute_query(con, normal_sat_query)
 #print(sats_info)
 print( len(sats_info["Sgid"]))
