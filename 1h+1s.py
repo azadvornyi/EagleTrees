@@ -6,13 +6,14 @@ mpl.use('TkAgg')
 import matplotlib.pyplot as plt
 import time
 from scipy import interpolate
+from sys import argv
 
 sim100 = 'RefL0100N1504'
 sim25 = 'RefL0025N0376'
 fof1 = 2
 sub1 = 7
 #============
-sim = sim25  # set simulation here
+sim = sim100  # set simulation here
 #============
 
 if sim == sim100:
@@ -24,8 +25,8 @@ else:
 
 con = sql.connect('twh176', password='tt408GS2')
 
-host_index = 2  # select host here
-sat_index = 1   # select satellite here
+host_index = int(argv[1])  # select host here
+sat_index = int(argv[2])   # select satellite here
 
 
 
@@ -59,7 +60,7 @@ t = time.time()
 
 he_index = host_index
 
-
+t1 = time.time()
 # Handling hosts that are close to the sides of the box
 def edge_proximity(host_info,box_size): # copy this
     offsetx = np.array([])
@@ -98,8 +99,10 @@ def edge_proximity(host_info,box_size): # copy this
 
 host_on_edge = edge_proximity(host_ids, box_size)# copy this
 
-print(host_on_edge,"this is host on edge")
+#print(host_on_edge,"this is host on edge")
 
+print(time.time() - t1, "s, moving to edge")
+t1 = time.time()
 # satellite selection around a host at z = 0. Hosts close to the wall of the box are handled as well
 normal_sat_query= 'SELECT \
              S.GalaxyID as Sgid, \
@@ -121,7 +124,8 @@ normal_sat_query= 'SELECT \
 sats_info = sql.execute_query(con, normal_sat_query)
 #print(sats_info)
 print( len(sats_info["Sgid"]))
-
+print(time.time() - t1, "s, sat selection around a host")
+t1 =time.time()
 # retrieving SubGroupNumber and FoF for a satellite
 fof_sub_query = \
     'SELECT \
@@ -136,8 +140,9 @@ S.GalaxyID = {1}'.format(sim, sats_info["Sgid"][sat_index])
 fof_sub_info = sql.execute_query(con, fof_sub_query)
 
 print(fof_sub_info,'fof subinfo')
+print(time.time() - t1, "s, retrieving SubGroupNumber and FoF for a satellite")
 
-
+t1 = time.time()
 # Host tree query
 tree_host_query = 'SELECT \
              DES.GalaxyID as gid, \
@@ -167,13 +172,15 @@ tree_host_query = 'SELECT \
 
 
 
+tree_host = sql.execute_query(con, tree_host_query)
+print(time.time() - t1, "s, Host tree query")
 # print(sats_info['Sgid'][1])
 # print(int(fof_sub_info['fof']),'fof')
 
 #test_tree = sql.execute_query(con,tree_query_generator(sim1,fof_sub_test['fof'], fof_sub_test['sub'] ))
 #
 #print(test_tree)
-
+t1 = time.time()
 # Satellite tree query
 tree_sat_query = 'SELECT \
              DES.GalaxyID as gid, \
@@ -203,15 +210,16 @@ tree_sat_query = 'SELECT \
 
 
 #building host and satellite trees
-tree_host = sql.execute_query(con, tree_host_query)
-tree_sat = sql.execute_query(con, tree_sat_query)
 
+tree_sat = sql.execute_query(con, tree_sat_query)
+print(time.time() - t1, "s, sat tree query")
 data = tree_sat
 
 
 #print(np.sqrt((tree_host['copx'][0] - tree_sat['copx'][0])**2 + (tree_host['copy'][0] - tree_sat['copy'][0])**2 + (tree_host['copz'][0] - tree_sat['copz'][0])**2))
-print((tree_host['copx'][0] - tree_sat['copx'][0]))
+#print((tree_host['copx'][0] - tree_sat['copx'][0]))
 
+t1 = time.time()
 # retrieving virial mass of the host
 host_r_vir_query = 'SELECT \
              PROG.Redshift as z,\
@@ -237,17 +245,19 @@ host_r_vir_query = 'SELECT \
 
 host_r_vir = sql.execute_query(con, host_r_vir_query)
 
+print(time.time() - t1, "s, R-vir host")
+# # print("Host coordinates")
+# # print(tree_host['copx'][-1],tree_host['copy'][-1],tree_host['copz'][-1])
+# # print("="*20)
+# # print("Sat coordinates")
+# # print(tree_sat['copx'][-1],tree_sat['copy'][-1],tree_sat['copz'][-1])
+# # print("R_vir")
+# # print(sats_info['r_vir'][-1])
+# # print(host_r_vir['r_vir'])
+# #
+# # print(sats_info)
 
-print("Host coordinates")
-print(tree_host['copx'][-1],tree_host['copy'][-1],tree_host['copz'][-1])
-print("="*20)
-print("Sat coordinates")
-print(tree_sat['copx'][-1],tree_sat['copy'][-1],tree_sat['copz'][-1])
-print("R_vir")
-print(sats_info['r_vir'][-1])
-print(host_r_vir['r_vir'])
-
-print(sats_info)
+t1 = time.time()
 # converting z to Gyr
 def times_Gyr(z):
     H0 = 67.77
@@ -362,6 +372,8 @@ def t_infall_and_quench(r_vir, dist, time_dist, ssfr, gen_time):
 tiq, t_infall, t_quench, first_approach_r = t_infall_and_quench(host_r_vir['r_vir'], radius,  time_z, tree_sat['ssfr'],
                                                                 times_Gyr(tree_sat['z']))
 
+print(time.time() - t1, "s, calculating distances")
+
 # print(t_infall,"infall time")
 # print(t_quench,'t_quench')
 print(tiq,'t_quench -  t_infall, Gyr')
@@ -407,4 +419,4 @@ plt.semilogy(times_Gyr(data['z']), data['ssfr']*1e9, '-r')
 plt.vlines(t_quench,0, 1)
 plt.savefig('ssfr.pdf', format='pdf')
 
-plt.show()
+#plt.show()

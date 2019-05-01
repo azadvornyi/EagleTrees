@@ -52,7 +52,7 @@ host_query = "SELECT \
              and SH.MassType_DM > {1}".format(sim, host_mass)
 
 host_ids = sql.execute_query(con, host_query)
-#print(len(host_ids))
+print(len(host_ids))
 #print((host_ids['gid'][0])
 t = time.time()
 he_index = host_index
@@ -119,28 +119,28 @@ sats_info = sql.execute_query(con, normal_sat_query)
 #print( len(sats_info["Sgid"]))
 
 
-# try:
-#     sat_len = len(sats_info["Sgid"])
-#     f = open("hostid_satnumber.txt", "a")
-#     f.write("{0:.0f} {1:.0f} \n".format(host_index, sat_len ))
-#     f.close()
-#     print(sat_len)
-# except TypeError as error:
-#     f = open("hostid_satnumber.txt", "a")
-#     f.write("{0:.0f} 0 \n".format(host_index))
-#     f.close()
-
-
-
 try:
     sat_len = len(sats_info["Sgid"])
-    f = open("satnumber.txt", "a")
-    f.write("{0:.0f} \n".format( sat_len ))
+    f = open("hostid_satnumber.txt", "a")
+    f.write("{0:.0f} {1:.0f} \n".format(host_index, sat_len ))
     f.close()
     print(sat_len)
 except TypeError as error:
-    f = open("satnumber.txt", "a")
-    f.write("0 \n")
+    f = open("hostid_satnumber.txt", "a")
+    f.write("{0:.0f} 0 \n".format(host_index))
     f.close()
+
+
+
+# try:
+#     sat_len = len(sats_info["Sgid"])
+#     f = open("satnumber.txt", "a")
+#     f.write("{0:.0f} \n".format( sat_len ))
+#     f.close()
+#     print(sat_len)
+# except TypeError as error:
+#     f = open("satnumber.txt", "a")
+#     f.write("0 \n")
+#     f.close()
 
 

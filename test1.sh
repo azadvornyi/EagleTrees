@@ -1,6 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 python3 noh.py > holder
+
+
 
 while read here; do
 
@@ -10,11 +12,3 @@ while read here; do
 
 done < holder
 
-
-while read name; do
-
-    for i in "${name[@]}"; do
-          python3 simpair.py ${i[0]} ${i[1]}
-      done
-
-done < hostid_satnumber.txt
