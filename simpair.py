@@ -72,22 +72,21 @@ def edge_proximity(host_info,box_size): # copy this
     gid = np.array([])
     fof = np.array([])
     sub = np.array([])
-    halfbox = box_size/2
     for host in host_info:
         x,y,z = 0,0,0
         r_vir = host['r_vir']*0.0025
         if (host['copx'] - r_vir < 0):
-            x = halfbox
+            x = box_size
         elif (host['copx'] + r_vir > box_size):
-            x = -halfbox
+            x = -box_size
         elif (host['copy'] - r_vir < 0) :
-            y = halfbox
+            y = box_size
         elif (host['copy'] + r_vir > box_size):
-            x = -halfbox
+            x = -box_size
         elif (host['copz'] - r_vir < 0) :
-            z = halfbox
+            z = box_size
         elif (host['copz'] + r_vir > box_size):
-            z = -halfbox
+            z = -box_size
 
         gid = np.append(gid, host['gid'])
         fof = np.append(fof, host['fof'])
@@ -116,9 +115,9 @@ normal_sat_query= 'SELECT \
              WHERE \
              H.GalaxyID = {1:.0f} \
              and H.GroupID = FOF.GroupID \
-             and 0.0025*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_x  + {2:.0f} - (S.CentreOfPotential_x+{2:.0f} - FLOOR((S.CentreOfPotential_x+{2:.0f})/ {5:.0f}))) \
-             and 0.0025*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_y  + {3:.0f} - (S.CentreOfPotential_y+{3:.0f} - FLOOR((S.CentreOfPotential_y+{3:.0f})/ {5:.0f}))) \
-             and 0.0025*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_z  + {4:.0f} - (S.CentreOfPotential_z+{4:.0f} - FLOOR((S.CentreOfPotential_z+{4:.0f})/ {5:.0f}))) \
+             and 0.0025*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_x  + {2:.0f} - S.CentreOfPotential_x) \
+             and 0.0025*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_y  + {3:.0f} - S.CentreOfPotential_y) \
+             and 0.0025*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_z  + {4:.0f} - S.CentreOfPotential_z) \
              and S.Snapnum = 28 \
              and S.MassType_Star between 1E9 and 1E12'.format(sim, host_on_edge['gid'][he_index], host_on_edge['dx'][he_index],
                                                               host_on_edge['dy'][he_index],host_on_edge['dz'][he_index],box_size)
@@ -371,7 +370,7 @@ sat_mass = data['ms'][0]
 if (tree_host['copx'][0] - tree_sat['copx'][0]) == 0:
     pass
 else:
-    f = open("data_plot_run2.txt", "a")
+    f = open("data_plot_run3.txt", "a")
     f.write("{0:.0f} {1:.0f} {2:} {3:} {4:} {5:} {6:}\n".format(host_index, sat_index, tree_host['mdm'][0], sat_mass,
                                                  t_infall, t_quench, data['ssfr'][0]))
     f.close()
