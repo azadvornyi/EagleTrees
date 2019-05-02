@@ -4,8 +4,10 @@
 #
 # print(a)
 #print('-')
-# import numpy as np
-#
-# a = np.loadtxt("hostid_satnumber100.txt", unpack="True", usecols=(1,))
-#
-# print(np.sum(a))
+#with open('trunk.pickle', 'rb') as f:
+#    t = pickle.load(f)
+import numpy as np
+
+a = np.load("sim25/0/sat_0.npy")
+
+print(a["copy"])

@@ -23,7 +23,6 @@ else:
 
 con = sql.connect('twh176', password='tt408GS2')
 
-host_index = 0  # argv[1] select host here
 
 
 #  selecting hosts above given mass

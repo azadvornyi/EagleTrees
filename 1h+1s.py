@@ -7,13 +7,13 @@ import matplotlib.pyplot as plt
 import time
 from scipy import interpolate
 from sys import argv
-
+import os
 sim100 = 'RefL0100N1504'
 sim25 = 'RefL0025N0376'
 fof1 = 2
 sub1 = 7
 #============
-sim = sim100  # set simulation here
+sim = sim25  # set simulation here
 #============
 
 if sim == sim100:
@@ -25,8 +25,9 @@ else:
 
 con = sql.connect('twh176', password='tt408GS2')
 
-host_index = int(argv[1])  # select host here
-sat_index = int(argv[2])   # select satellite here
+host_index = 17
+#int(argv[1])  # select host here
+sat_index = 0 #int(argv[2])   # select satellite here
 
 
 
@@ -247,16 +248,17 @@ host_r_vir_query = 'SELECT \
 host_r_vir = sql.execute_query(con, host_r_vir_query)
 
 print(time.time() - t1, "s, R-vir host")
-# # print("Host coordinates")
-# # print(tree_host['copx'][-1],tree_host['copy'][-1],tree_host['copz'][-1])
-# # print("="*20)
-# # print("Sat coordinates")
-# # print(tree_sat['copx'][-1],tree_sat['copy'][-1],tree_sat['copz'][-1])
-# # print("R_vir")
-# # print(sats_info['r_vir'][-1])
-# # print(host_r_vir['r_vir'])
-# #
-# # print(sats_info)
+print("Host coordinates")
+print(tree_host['copx'][0],tree_host['copy'][0],tree_host['copz'][0])
+print("="*20)
+print("Sat coordinates")
+print(tree_sat['copx'][0],tree_sat['copy'][0],tree_sat['copz'][0])
+print("R_vir")
+print(sats_info['r_vir'][0])
+print(host_r_vir['r_vir'])
+print(host_ids['r_vir'][17])
+
+print(sats_info)
 
 t1 = time.time()
 # converting z to Gyr
@@ -379,6 +381,24 @@ print(time.time() - t1, "s, calculating distances")
 # print(t_quench,'t_quench')
 print(tiq,'t_quench -  t_infall, Gyr')
 print(data['ms'][0],'M_solar @ z = 0')
+
+dirName = 'sim25/{0}'.format(host_index)
+
+# Create target directory & all intermediate directories if don't exists
+try:
+    os.makedirs(dirName)
+    print("Directory ", dirName, " Created ")
+except FileExistsError:
+    print("Directory ", dirName, " already exists")
+
+try:
+    np.save("sim25/{0}/host_{0}".format(host_index), tree_host)
+    np.save("sim25/{0}/host_r_vir_{0}".format(host_index), host_r_vir)
+except FileExistsError:
+    print("this host already exist")
+
+np.save("sim25/{0}/sat_{1}".format(host_index,sat_index), tree_sat)
+
 
 
 # checking if the host became a satellite of itself

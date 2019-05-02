@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 import time
 from scipy import interpolate
 from sys import argv
+import os
+import pickle
 #import sat_tracker
 #import dummy1
 
@@ -370,8 +372,10 @@ sat_mass = data['ms'][0]
 # checking if the host became a satellite of itself
 if (tree_host['copx'][0] - tree_sat['copx'][0]) == 0:
     pass
+elif (t_infall or t_quench) == 0:
+    pass
 else:
-    f = open("data_plot_run3.txt", "a")
+    f = open("data_plot_25.txt", "a")
     f.write("{0:.0f} {1:.0f} {2:} {3:} {4:} {5:} {6:}\n".format(host_index, sat_index, tree_host['mdm'][0], sat_mass,
                                                  t_infall, t_quench, data['ssfr'][0]))
     f.close()
@@ -379,9 +383,34 @@ else:
 
 this_sat_id = sat_index
 
+dirName = 'sim25/{0}'.format(host_index)
 
+# Create target directory & all intermediate directories if don't exists
+try:
+    os.makedirs(dirName)
+    print("Directory ", dirName, " Created ")
+except FileExistsError:
+    print("Directory ", dirName, " already exists")
 
+# try:
+# #     with open("sim25/{0}/host_{0}".format(host_index), 'wb') as f0:
+# #         pickle.dump(tree_host, f, pickle.HIGHEST_PROTOCOL)
+# #     with open("sim25/{0}/host_r_vir_{0}".format(host_index), 'wb') as f1:
+# #         pickle.dump(host_r_vir, f, pickle.HIGHEST_PROTOCOL)
+# # except FileExistsError:
+# #     print("this host already exist")
+# #
+# #
+# # with open("sim25/{0}/sat_{1}".format(host_index,sat_index), 'wb') as f2:
+# #     pickle.dump(tree_sat, f, pickle.HIGHEST_PROTOCOL)
 
+try:
+    np.save("sim25/{0}/host_{0}".format(host_index), tree_host)
+    np.save("sim25/{0}/host_r_vir_{0}".format(host_index), host_r_vir)
+except FileExistsError:
+    print("this host already exist")
+
+np.save("sim25/{0}/sat_{1}".format(host_index,sat_index), tree_sat)
 
 
 plt.plot(time_z, radius)

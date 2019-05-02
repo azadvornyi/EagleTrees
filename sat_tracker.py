@@ -15,7 +15,7 @@ sim100 = 'RefL0100N1504'
 sim25 = 'RefL0025N0376'
 
 #============
-sim = sim100  # set simulation here
+sim = sim25  # set simulation here
 #============
 
 if sim == sim100:
