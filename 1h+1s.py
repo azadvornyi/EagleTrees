@@ -6,6 +6,7 @@ mpl.use('TkAgg')
 import matplotlib.pyplot as plt
 import time
 from scipy import interpolate
+import pickle
 from sys import argv
 import os
 sim100 = 'RefL0100N1504'
@@ -25,9 +26,9 @@ else:
 
 con = sql.connect('twh176', password='tt408GS2')
 
-host_index = 17
+host_index = 0
 #int(argv[1])  # select host here
-sat_index = 0 #int(argv[2])   # select satellite here
+sat_index = 2 #int(argv[2])   # select satellite here
 
 
 
@@ -174,7 +175,16 @@ tree_host_query = 'SELECT \
 
 
 
-tree_host = sql.execute_query(con, tree_host_query)
+try:
+    with open('sim25/{0}/host_{0}'.format(host_index), 'rb') as f3:
+        tree_host = pickle.load(f3)
+    #tree_host = np.load("sim{0}/{1}/host_{1}.npy".format(sim25,host_index))
+except FileNotFoundError:
+    print("calculating the host tree")
+    tree_host = sql.execute_query(con, tree_host_query)
+
+
+
 print(time.time() - t1, "s, Host tree query")
 # print(sats_info['Sgid'][1])
 # print(int(fof_sub_info['fof']),'fof')
@@ -245,7 +255,18 @@ host_r_vir_query = 'SELECT \
              PROG.MassType_Star desc'.format(sim, int(fof_sub_info['fof']), int(fof_sub_info['sub']))
 
 
-host_r_vir = sql.execute_query(con, host_r_vir_query)
+
+#host_r_vir = sql.execute_query(con, host_r_vir_query)
+#print(len(host_r_vir))
+try:
+    with open("sim25/{0}/host_r_vir_{0}".format(host_index), 'rb') as f4:
+        host_r_vir = pickle.load(f4)
+except FileNotFoundError:
+    print("calculating R_vir")
+    host_r_vir = sql.execute_query(con, host_r_vir_query)
+
+
+
 
 print(time.time() - t1, "s, R-vir host")
 print("Host coordinates")
@@ -388,27 +409,18 @@ dirName = 'sim25/{0}'.format(host_index)
 try:
     os.makedirs(dirName)
     print("Directory ", dirName, " Created ")
+    with open("sim25/{0}/host_{0}".format(host_index), 'wb') as f0:
+        pickle.dump(tree_host, f0, pickle.HIGHEST_PROTOCOL)
+
 except FileExistsError:
     print("Directory ", dirName, " already exists")
 
-try:
-    np.save("sim25/{0}/host_{0}".format(host_index), tree_host)
-    np.save("sim25/{0}/host_r_vir_{0}".format(host_index), host_r_vir)
-except FileExistsError:
-    print("this host already exist")
 
-np.save("sim25/{0}/sat_{1}".format(host_index,sat_index), tree_sat)
+with open("sim25/{0}/sat_{1}".format(host_index,sat_index), 'wb') as f2:
+    pickle.dump(tree_sat, f2, pickle.HIGHEST_PROTOCOL)
 
-
-
-# checking if the host became a satellite of itself
-# if (tree_host['copx'][0] - tree_sat['copx'][0]) == 0:
-#     datapair = (0, 0)
-# else:
-#     datapair = (data['ms'][0],tiq)
-#
-# print(datapair)
-
+with open("sim25/{0}/host_r_vir_{0}".format(host_index), 'wb') as f1:
+    pickle.dump(host_r_vir, f1, pickle.HIGHEST_PROTOCOL)
 
 print(t_infall,'t_infall')
 print(t_quench,"t_quench")

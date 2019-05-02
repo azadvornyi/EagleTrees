@@ -212,7 +212,17 @@ tree_sat_query = 'SELECT \
 
 
 #building host and satellite trees
-tree_host = sql.execute_query(con, tree_host_query)
+
+
+try:
+    with open("sim{0}/{1}/host_{1}".format(sim_box,host_index), 'rb') as f3:
+        tree_host = pickle.load(f3)
+    #tree_host = np.load("sim{0}/{1}/host_{1}.npy".format(sim25,host_index))
+except FileNotFoundError:
+    print("calculating the host tree")
+    tree_host = sql.execute_query(con, tree_host_query)
+
+
 tree_sat = sql.execute_query(con, tree_sat_query)
 
 data = tree_sat
@@ -244,6 +254,10 @@ host_r_vir_query = 'SELECT \
 
 
 host_r_vir = sql.execute_query(con, host_r_vir_query)
+
+
+
+
 
 
 # converting z to Gyr
@@ -387,31 +401,25 @@ this_sat_id = sat_index
 dirName = 'sim{1}/{0}'.format(host_index,sim_box)
 
 # Create target directory & all intermediate directories if don't exists
+
+
 try:
     os.makedirs(dirName)
     print("Directory ", dirName, " Created ")
+    with open("sim{1}/{0}/host_{0}".format(host_index, sim_box), 'wb') as f0:
+        pickle.dump(tree_host, f0, pickle.HIGHEST_PROTOCOL)
+    with open("sim{1}/{0}/host_r_vir_{0}".format(host_index, sim_box), 'wb') as f1:
+        pickle.dump(host_r_vir, f1, pickle.HIGHEST_PROTOCOL)
 except FileExistsError:
     print("Directory ", dirName, " already exists")
 
-# try:
-# #     with open("sim25/{0}/host_{0}".format(host_index), 'wb') as f0:
-# #         pickle.dump(tree_host, f, pickle.HIGHEST_PROTOCOL)
-# #     with open("sim25/{0}/host_r_vir_{0}".format(host_index), 'wb') as f1:
-# #         pickle.dump(host_r_vir, f, pickle.HIGHEST_PROTOCOL)
-# # except FileExistsError:
-# #     print("this host already exist")
-# #
-# #
-# # with open("sim25/{0}/sat_{1}".format(host_index,sat_index), 'wb') as f2:
-# #     pickle.dump(tree_sat, f, pickle.HIGHEST_PROTOCOL)
 
-try:
-    np.save("sim{1}/{0}/host_{0}".format(host_index, sim_box), tree_host)
-    np.save("sim{1}/{0}/host_r_vir_{0}".format(host_index, sim_box), host_r_vir)
-except FileExistsError:
-    print("this host already exist")
+with open("sim{2}/{0}/sat_{1}".format(host_index,sat_index, sim_box), 'wb') as f2:
+    pickle.dump(tree_sat, f2, pickle.HIGHEST_PROTOCOL)
 
-np.save("sim{2}/{0}/sat_{1}".format(host_index,sat_index, sim_box), tree_sat)
+
+
+
 
 
 plt.plot(time_z, radius)

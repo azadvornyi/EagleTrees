@@ -4,10 +4,9 @@
 #
 # print(a)
 #print('-')
-#with open('trunk.pickle', 'rb') as f:
-#    t = pickle.load(f)
-import numpy as np
+import pickle
 
-a = np.load("sim25/0/sat_0.npy")
+with open("sim25/0/host_r_vir_0", 'rb') as f4:
+    host_r_vir = pickle.load(f4)
 
-print(a["copy"])
+print(len(host_r_vir['r_vir']))

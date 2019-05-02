@@ -2,13 +2,13 @@
 
 python3 noh.py 100 > holder
 
-#while read here; do
-#
-#    for (( c=0; c<${here}; c++ )) do
-#          python3 sat_tracker.py $c 100 #insert [sat_tracker.py] instead of dummy1.py
-#      done
-#
-#done < holder
+while read here; do
+
+    for (( c=0; c<${here}; c++ )) do
+          python3 sat_tracker.py $c 100 #insert [sat_tracker.py] instead of dummy1.py
+      done
+
+done < holder
 
 
 
@@ -24,3 +24,11 @@ while read name; do
     done
 
 done < hostid_satnumber_100.txt
+
+
+
+SUBJECT="Calculations are finished"
+TO="a.zadvornyi@student.rug.nl"
+MESSAGE="message.txt"
+
+/usr/bin/mail -s "$SUBJECT" "$TO" < $MESSAGE
