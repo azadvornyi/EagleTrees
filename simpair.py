@@ -115,9 +115,9 @@ normal_sat_query= 'SELECT \
              WHERE \
              H.GalaxyID = {1:.0f} \
              and H.GroupID = FOF.GroupID \
-             and 0.0025*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_x  + {2:.0f} - S.CentreOfPotential_x) \
-             and 0.0025*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_y  + {3:.0f} - S.CentreOfPotential_y) \
-             and 0.0025*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_z  + {4:.0f} - S.CentreOfPotential_z) \
+             and 0.0025*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_x  - (S.CentreOfPotential_x - FLOOR((S.CentreOfPotential_x+{2:.0f})/ {5:.0f}))) \
+             and 0.0025*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_y  - (S.CentreOfPotential_y - FLOOR((S.CentreOfPotential_y+{3:.0f})/ {5:.0f}))) \
+             and 0.0025*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_z  - (S.CentreOfPotential_z - FLOOR((S.CentreOfPotential_z+{4:.0f})/ {5:.0f}))) \
              and S.Snapnum = 28 \
              and S.MassType_Star between 1E9 and 1E12'.format(sim, host_on_edge['gid'][he_index], host_on_edge['dx'][he_index],
                                                               host_on_edge['dy'][he_index],host_on_edge['dz'][he_index],box_size)
