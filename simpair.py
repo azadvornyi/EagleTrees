@@ -72,21 +72,22 @@ def edge_proximity(host_info,box_size): # copy this
     gid = np.array([])
     fof = np.array([])
     sub = np.array([])
+    halfbox = box_size / 2
     for host in host_info:
-        x,y,z = 0,0,0
-        r_vir = host['r_vir']*0.0025
+        x, y, z = 0, 0, 0
+        r_vir = host['r_vir'] * 0.0025
         if (host['copx'] - r_vir < 0):
-            x = box_size
+            x = halfbox
         elif (host['copx'] + r_vir > box_size):
-            x = -box_size
-        elif (host['copy'] - r_vir < 0) :
-            y = box_size
+            x = -halfbox
+        elif (host['copy'] - r_vir < 0):
+            y = halfbox
         elif (host['copy'] + r_vir > box_size):
-            x = -box_size
-        elif (host['copz'] - r_vir < 0) :
-            z = box_size
+            x = -halfbox
+        elif (host['copz'] - r_vir < 0):
+            z = halfbox
         elif (host['copz'] + r_vir > box_size):
-            z = -box_size
+            z = -halfbox
 
         gid = np.append(gid, host['gid'])
         fof = np.append(fof, host['fof'])
