@@ -9,21 +9,23 @@ from scipy import interpolate
 from sys import argv
 import os
 import pickle
-#import sat_tracker
-#import dummy1
+
 
 
 sim100 = 'RefL0100N1504'
 sim25 = 'RefL0025N0376'
 
+sim_box = int(argv[3])
 #============
-sim = sim25  # set simulation here
+sim = int(argv[3])  # set simulation here
 #============
 
-if sim == sim100:
+if sim_box == 100:
+    sim = sim100
     box_size = 100
     host_mass = 1E13
 else:
+    sim = sim25
     box_size = 25
     host_mass = 1E12
 
@@ -33,8 +35,7 @@ host_index = int(argv[1]) # select host here
 
 sat_index = int(argv[2])  # select satellite here
 
-#34
-#35
+
 
 #  selecting hosts above given mass
 host_query = "SELECT \
@@ -375,7 +376,7 @@ if (tree_host['copx'][0] - tree_sat['copx'][0]) == 0:
 elif (t_infall or t_quench) == 0:
     pass
 else:
-    f = open("data_plot_25.txt", "a")
+    f = open("data_plot_{0}.txt".format(sim_box), "a")
     f.write("{0:.0f} {1:.0f} {2:} {3:} {4:} {5:} {6:}\n".format(host_index, sat_index, tree_host['mdm'][0], sat_mass,
                                                  t_infall, t_quench, data['ssfr'][0]))
     f.close()
@@ -383,7 +384,7 @@ else:
 
 this_sat_id = sat_index
 
-dirName = 'sim25/{0}'.format(host_index)
+dirName = 'sim{1}/{0}'.format(host_index,sim_box)
 
 # Create target directory & all intermediate directories if don't exists
 try:
@@ -405,12 +406,12 @@ except FileExistsError:
 # #     pickle.dump(tree_sat, f, pickle.HIGHEST_PROTOCOL)
 
 try:
-    np.save("sim25/{0}/host_{0}".format(host_index), tree_host)
-    np.save("sim25/{0}/host_r_vir_{0}".format(host_index), host_r_vir)
+    np.save("sim{1}/{0}/host_{0}".format(host_index, sim_box), tree_host)
+    np.save("sim{1}/{0}/host_r_vir_{0}".format(host_index, sim_box), host_r_vir)
 except FileExistsError:
     print("this host already exist")
 
-np.save("sim25/{0}/sat_{1}".format(host_index,sat_index), tree_sat)
+np.save("sim{2}/{0}/sat_{1}".format(host_index,sat_index, sim_box), tree_sat)
 
 
 plt.plot(time_z, radius)

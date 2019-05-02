@@ -15,13 +15,16 @@ sim100 = 'RefL0100N1504'
 sim25 = 'RefL0025N0376'
 
 #============
-sim = sim25  # set simulation here
+sim_box = int(argv[2])
 #============
+sim = int(argv[2])
 
-if sim == sim100:
+if sim_box == 100:
+    sim = sim100
     box_size = 100
     host_mass = 1E13
 else:
+    sim = sim25
     box_size = 25
     host_mass = 1E12
 
@@ -122,12 +125,12 @@ sats_info = sql.execute_query(con, normal_sat_query)
 
 try:
     sat_len = len(sats_info["Sgid"])
-    f = open("hostid_satnumber.txt", "a")
+    f = open("hostid_satnumber_{0}.txt".format(sim_box), "a")
     f.write("{0:.0f} {1:.0f} \n".format(host_index, sat_len ))
     f.close()
     print(sat_len)
 except TypeError as error:
-    f = open("hostid_satnumber.txt", "a")
+    f = open("hostid_satnumber_{0}.txt".format(sim_box), "a")
     f.write("{0:.0f} 0 \n".format(host_index))
     f.close()
 

@@ -11,13 +11,16 @@ sim100 = 'RefL0100N1504'
 sim25 = 'RefL0025N0376'
 
 #============
-sim = sim25  # set simulation here
+sim_box = int(argv[1])
 #============
 
-if sim == sim100:
+
+if sim_box == 100:
+    sim = sim100
     box_size = 100
     host_mass = 1E13
 else:
+    sim = sim25
     box_size = 25
     host_mass = 1E12
 
