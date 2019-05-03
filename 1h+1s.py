@@ -26,7 +26,7 @@ else:
 
 con = sql.connect('twh176', password='tt408GS2')
 
-host_index = 16
+host_index = 0
 #int(argv[1])  # select host here
 sat_index = 0 #int(argv[2])   # select satellite here
 
@@ -102,8 +102,8 @@ def edge_proximity(host_info,box_size): # copy this
 
 host_on_edge = edge_proximity(host_ids, box_size)# copy this
 
-print(host_on_edge,"this is host on edge")
-print(host_ids)
+# print(host_on_edge,"this is host on edge")
+# print(host_ids)
 print(time.time() - t1, "s, moving to edge")
 t1 = time.time()
 # satellite selection around a host at z = 0. Hosts close to the wall of the box are handled as well
@@ -256,8 +256,8 @@ host_r_vir_query = 'SELECT \
 
 
 
-#host_r_vir = sql.execute_query(con, host_r_vir_query)
-#print(len(host_r_vir))
+# host_r_vir = sql.execute_query(con, host_r_vir_query)
+# print(len(host_r_vir))
 try:
     with open("sim25/{0}/host_r_vir_{0}".format(host_index), 'rb') as f4:
         host_r_vir = pickle.load(f4)
@@ -276,10 +276,10 @@ print("Sat coordinates")
 print(tree_sat['copx'][0],tree_sat['copy'][0],tree_sat['copz'][0])
 print("R_vir")
 print(sats_info['r_vir'][0])
-print(host_r_vir['r_vir'])
+# print(host_r_vir['r_vir'])
 #print(host_ids['r_vir'][17])
 
-print(sats_info)
+#print(sats_info)
 
 t1 = time.time()
 # converting z to Gyr
@@ -357,7 +357,7 @@ print(time.time() - t, 'it took this many seconds')
 
 
 # calculating t_quench - t_infall
-def t_infall_and_quench(r_vir, dist, time_dist, ssfr, gen_time):
+def t_infall_and_quench(r_vir, dist, time_dist, ssfr, gen_time, sat_time):
     r_vir_func = interpolate.interp1d(gen_time, r_vir )
     dist_func = interpolate.interp1d(time_dist, dist )
 
@@ -377,7 +377,7 @@ def t_infall_and_quench(r_vir, dist, time_dist, ssfr, gen_time):
             break
 
 
-    ssfr_func = interpolate.interp1d(gen_time,ssfr)
+    ssfr_func = interpolate.interp1d(sat_time,ssfr)
     interp_ssfr = ssfr_func(precise_time)
     for i in reversed(range(len(interp_ssfr))):
         if interp_ssfr[i]*1e9>1e-2:
@@ -394,7 +394,7 @@ def t_infall_and_quench(r_vir, dist, time_dist, ssfr, gen_time):
 
 
 tiq, t_infall, t_quench, first_approach_r = t_infall_and_quench(host_r_vir['r_vir'], radius,  time_z, tree_sat['ssfr'],
-                                                                times_Gyr(tree_sat['z']))
+                                                                times_Gyr(tree_host['z']), times_Gyr((tree_sat['z'])))
 
 print(time.time() - t1, "s, calculating distances")
 

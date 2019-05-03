@@ -387,8 +387,6 @@ sat_mass = data['ms'][0]
 # checking if the host became a satellite of itself
 if (tree_host['copx'][0] - tree_sat['copx'][0]) == 0:
     pass
-elif (t_infall or t_quench) == 0:
-    pass
 else:
     f = open("data_plot_{0}.txt".format(sim_box), "a")
     f.write("{0:.0f} {1:.0f} {2:} {3:} {4:} {5:} {6:}\n".format(host_index, sat_index, tree_host['mdm'][0], sat_mass,
