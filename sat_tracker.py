@@ -136,15 +136,5 @@ except TypeError as error:
 
 
 
-# try:
-#     sat_len = len(sats_info["Sgid"])
-#     f = open("satnumber.txt", "a")
-#     f.write("{0:.0f} \n".format( sat_len ))
-#     f.close()
-#     print(sat_len)
-# except TypeError as error:
-#     f = open("satnumber.txt", "a")
-#     f.write("0 \n")
-#     f.close()
 
 
