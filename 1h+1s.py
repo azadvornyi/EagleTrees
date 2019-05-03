@@ -26,9 +26,9 @@ else:
 
 con = sql.connect('twh176', password='tt408GS2')
 
-host_index = 0
+host_index = 16
 #int(argv[1])  # select host here
-sat_index = 2 #int(argv[2])   # select satellite here
+sat_index = 0 #int(argv[2])   # select satellite here
 
 
 
@@ -102,8 +102,8 @@ def edge_proximity(host_info,box_size): # copy this
 
 host_on_edge = edge_proximity(host_ids, box_size)# copy this
 
-#print(host_on_edge,"this is host on edge")
-
+print(host_on_edge,"this is host on edge")
+print(host_ids)
 print(time.time() - t1, "s, moving to edge")
 t1 = time.time()
 # satellite selection around a host at z = 0. Hosts close to the wall of the box are handled as well
@@ -142,7 +142,7 @@ S.GalaxyID = {1}'.format(sim, sats_info["Sgid"][sat_index])
 
 fof_sub_info = sql.execute_query(con, fof_sub_query)
 
-print(fof_sub_info,'fof subinfo')
+print(fof_sub_info,'fof subinfo of a astellite')
 print(time.time() - t1, "s, retrieving SubGroupNumber and FoF for a satellite")
 
 t1 = time.time()
@@ -252,7 +252,7 @@ host_r_vir_query = 'SELECT \
          ORDER BY \
              DES.MassType_Star desc, \
              PROG.Redshift asc, \
-             PROG.MassType_Star desc'.format(sim, int(fof_sub_info['fof']), int(fof_sub_info['sub']))
+             PROG.MassType_Star desc'.format(sim, int(host_ids['fof'][host_index]), int(host_ids['sub'][host_index]))
 
 
 
@@ -277,7 +277,7 @@ print(tree_sat['copx'][0],tree_sat['copy'][0],tree_sat['copz'][0])
 print("R_vir")
 print(sats_info['r_vir'][0])
 print(host_r_vir['r_vir'])
-print(host_ids['r_vir'][17])
+#print(host_ids['r_vir'][17])
 
 print(sats_info)
 

@@ -250,7 +250,7 @@ host_r_vir_query = 'SELECT \
          ORDER BY \
              DES.MassType_Star desc, \
              PROG.Redshift asc, \
-             PROG.MassType_Star desc'.format(sim, int(fof_sub_info['fof']), int(fof_sub_info['sub']))
+             PROG.MassType_Star desc'.format(sim, int(host_ids['fof'][host_index]), int(host_ids['sub'][host_index]))
 
 
 host_r_vir = sql.execute_query(con, host_r_vir_query)
