@@ -8,6 +8,7 @@ import time
 from scipy import interpolate
 import pickle
 from sys import argv
+import sys
 import os
 sim100 = 'RefL0100N1504'
 sim25 = 'RefL0025N0376'
@@ -26,9 +27,9 @@ else:
 
 con = sql.connect('twh176', password='tt408GS2')
 
-host_index = 0
+host_index = 2
 #int(argv[1])  # select host here
-sat_index = 0 #int(argv[2])   # select satellite here
+sat_index = 1 #int(argv[2])   # select satellite here
 
 
 
@@ -53,7 +54,8 @@ host_ids = sql.execute_query(con, host_query)
 
 print(len(host_ids))
 
-
+if int(host_ids['sub'][host_index]) != 0:
+    sys.exit()
 
 #print((host_ids['gid'][0]))
 host_id = 13892596
@@ -102,7 +104,7 @@ def edge_proximity(host_info,box_size): # copy this
 
 host_on_edge = edge_proximity(host_ids, box_size)# copy this
 
-# print(host_on_edge,"this is host on edge")
+print(host_on_edge,"this is host on edge")
 # print(host_ids)
 print(time.time() - t1, "s, moving to edge")
 t1 = time.time()
@@ -276,7 +278,9 @@ print("Sat coordinates")
 print(tree_sat['copx'][0],tree_sat['copy'][0],tree_sat['copz'][0])
 print("R_vir")
 print(sats_info['r_vir'][0])
-# print(host_r_vir['r_vir'])
+print(host_r_vir['r_vir'])
+print(len(host_r_vir['r_vir']))
+print(len(tree_sat))
 #print(host_ids['r_vir'][17])
 
 #print(sats_info)
@@ -304,39 +308,75 @@ def moving_to_origin(host, sat, box, r):
     t_infall = np.array([])
     r_vir = np.array([])
     halfbox = box/2
-    for i in reversed(range(len(sat))):
-        for j in reversed(range(len(host))):
+    if len(host) > len(sat):
+        for i in reversed(range(len(sat))):
+            for j in reversed(range(len(host))):
 
-            if sat['z'][i] == host['z'][j]:
-                a = 1/(1+host['z'][j])
-                scaled_halfbox = halfbox * a
-                scaled_box = box * a
-                x = host['copx'][j] - sat['copx'][i]
-                x = x * a
-                if x < -scaled_halfbox:
-                    x = x + scaled_box
-                elif x > scaled_halfbox:
-                    x = x - scaled_box
+                if sat['z'][i] == host['z'][j]:
+                    a = 1/(1+host['z'][j])
+                    scaled_halfbox = halfbox * a
+                    scaled_box = box * a
+                    x = host['copx'][j] - sat['copx'][i]
+                    x = x * a
+                    if x < -scaled_halfbox:
+                        x = x + scaled_box
+                    elif x > scaled_halfbox:
+                        x = x - scaled_box
 
-                y = host['copy'][j] - sat['copy'][i]
-                y = y * a
-                if y < -scaled_halfbox:
-                    y = y + scaled_box
-                elif y > scaled_halfbox:
-                    y = y - scaled_box
+                    y = host['copy'][j] - sat['copy'][i]
+                    y = y * a
+                    if y < -scaled_halfbox:
+                        y = y + scaled_box
+                    elif y > scaled_halfbox:
+                        y = y - scaled_box
 
-                z = host['copz'][j] - sat['copz'][i]
-                z = z * a
-                if z < -scaled_halfbox:
-                    z = z + scaled_box
-                elif z > scaled_halfbox:
-                    z = z - scaled_box
+                    z = host['copz'][j] - sat['copz'][i]
+                    z = z * a
+                    if z < -scaled_halfbox:
+                        z = z + scaled_box
+                    elif z > scaled_halfbox:
+                        z = z - scaled_box
 
-                dist = np.sqrt(x**2 + y**2 + z**2)
+                    dist = np.sqrt(x**2 + y**2 + z**2)
 
-                r_vir = np.append(r_vir, r[i])
-                distances = np.append(distances,dist)
-                time_ = np.append(time_, sat['z'][i])
+                    r_vir = np.append(r_vir, r[i])
+                    distances = np.append(distances,dist)
+                    time_ = np.append(time_, sat['z'][i])
+    else:
+        for i in reversed(range(len(host))):
+            for j in reversed(range(len(sat))):
+
+                if host['z'][i] == sat['z'][j]:
+                    a = 1 / (1 + sat['z'][j])
+                    scaled_halfbox = halfbox * a
+                    scaled_box = box * a
+                    x = sat['copx'][j] - host['copx'][i]
+                    x = x * a
+                    if x < -scaled_halfbox:
+                        x = x + scaled_box
+                    elif x > scaled_halfbox:
+                        x = x - scaled_box
+
+                    y = sat['copy'][j] - host['copy'][i]
+                    y = y * a
+                    if y < -scaled_halfbox:
+                        y = y + scaled_box
+                    elif y > scaled_halfbox:
+                        y = y - scaled_box
+
+                    z = sat['copz'][j] - host['copz'][i]
+                    z = z * a
+                    if z < -scaled_halfbox:
+                        z = z + scaled_box
+                    elif z > scaled_halfbox:
+                        z = z - scaled_box
+
+                    dist = np.sqrt(x ** 2 + y ** 2 + z ** 2)
+
+                    r_vir = np.append(r_vir, r[i])
+                    distances = np.append(distances, dist)
+                    time_ = np.append(time_, host['z'][i])
+
 
     for counter in range(len(distances)):
         if distances[counter] < 0.0025 * r_vir[counter]:
@@ -431,7 +471,7 @@ plt.plot(times_Gyr(host_r_vir['z']), host_r_vir['r_vir']*0.0025,c = 'red')
 plt.ylabel('radius, (Mpc)')
 plt.hlines(first_approach_r,0,max(time_z))
 plt.vlines(t_infall,0, 1)
-plt.savefig('dist.pdf', format ='pdf')
+plt.savefig('dist1.pdf', format ='pdf')
 plt.clf()
 
 # #print(data['sns']) tree_host

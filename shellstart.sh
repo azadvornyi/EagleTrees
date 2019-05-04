@@ -2,13 +2,13 @@
 
 python3 noh.py 25 > holder
 
-while read here; do
-
-    for (( c=0; c<${here}; c++ )) do
-          python3 sat_tracker.py $c 25 #insert [sat_tracker.py] instead of dummy1.py
-      done
-
-done < holder
+#while read here; do
+#
+#    for (( c=0; c<${here}; c++ )) do
+#          python3 sat_tracker.py $c 25 #insert [sat_tracker.py] instead of dummy1.py
+#      done
+#
+#done < holder
 
 
 
