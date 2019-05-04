@@ -221,7 +221,6 @@ try:
         tree_host = pickle.load(f3)
     #tree_host = np.load("sim{0}/{1}/host_{1}.npy".format(sim25,host_index))
 except FileNotFoundError:
-    print("calculating the host tree")
     tree_host = sql.execute_query(con, tree_host_query)
 
 
@@ -256,9 +255,14 @@ host_r_vir_query = 'SELECT \
              PROG.MassType_Star desc'.format(sim, int(host_ids['fof'][host_index]), int(host_ids['sub'][host_index]))
 
 
-host_r_vir = sql.execute_query(con, host_r_vir_query)
+#host_r_vir = sql.execute_query(con, host_r_vir_query)
 
-
+try:
+    with open("sim{0}/{1}/host_r_vir_{1}".format(sim_box,host_index), 'rb') as f5:
+        host_r_vir = pickle.load(f5)
+    #tree_host = np.load("sim{0}/{1}/host_{1}.npy".format(sim25,host_index))
+except FileNotFoundError:
+    host_r_vir = sql.execute_query(con, host_r_vir_query)
 
 
 
@@ -453,7 +457,7 @@ else:
         with open("sim{1}/{0}/host_r_vir_{0}".format(host_index, sim_box), 'wb') as f1:
             pickle.dump(host_r_vir, f1, pickle.HIGHEST_PROTOCOL)
     except FileExistsError:
-        print(" ")
+        pass
 
 
     with open("sim{2}/{0}/sat_{1}".format(host_index,sat_index, sim_box), 'wb') as f2:
@@ -462,29 +466,29 @@ else:
 
 
 
+print(time.time() - t,"sec ")
 
-
-plt.plot(time_z, radius)
-plt.plot(times_Gyr(host_r_vir['z']), host_r_vir['r_vir']*0.0025,c = 'red')
-plt.ylabel('radius, (Mpc)')
-plt.hlines(first_approach_r,0,max(time_z))
-plt.vlines(t_infall,0, 1)
-plt.savefig('dist.pdf', format ='pdf')
-plt.clf()
-
-# #print(data['sns'])
-plt.plot(data['z'], data['copx'], '-r')
-plt.plot(data['z'], data['copy'], '-g')
-plt.plot(data['z'], data['copz'], '-b')
-plt.savefig('cop.pdf')
-
-plt.clf()
-plt.semilogy(times_Gyr(data['z']), data['ms'], '-k')
-plt.savefig('ms.pdf', format='pdf')
-
-plt.clf()
-plt.semilogy(times_Gyr(data['z']), data['ssfr']*1e9, '-r')
-plt.vlines(t_quench,0, 1)
-plt.savefig('ssfr.pdf', format='pdf')
+# plt.plot(time_z, radius)
+# plt.plot(times_Gyr(host_r_vir['z']), host_r_vir['r_vir']*0.0025,c = 'red')
+# plt.ylabel('radius, (Mpc)')
+# plt.hlines(first_approach_r,0,max(time_z))
+# plt.vlines(t_infall,0, 1)
+# plt.savefig('dist.pdf', format ='pdf')
+# plt.clf()
+#
+# # #print(data['sns'])
+# plt.plot(data['z'], data['copx'], '-r')
+# plt.plot(data['z'], data['copy'], '-g')
+# plt.plot(data['z'], data['copz'], '-b')
+# plt.savefig('cop.pdf')
+#
+# plt.clf()
+# plt.semilogy(times_Gyr(data['z']), data['ms'], '-k')
+# plt.savefig('ms.pdf', format='pdf')
+#
+# plt.clf()
+# plt.semilogy(times_Gyr(data['z']), data['ssfr']*1e9, '-r')
+# plt.vlines(t_quench,0, 1)
+# plt.savefig('ssfr.pdf', format='pdf')
 
 #plt.show()
