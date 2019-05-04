@@ -146,7 +146,7 @@ S.GalaxyID = {1}'.format(sim, sats_info["Sgid"][sat_index])
 
 fof_sub_info = sql.execute_query(con, fof_sub_query)
 
-print(fof_sub_info,'fof subinfo')
+# print(fof_sub_info,'fof subinfo')
 
 
 # Host tree query
@@ -230,7 +230,7 @@ tree_sat = sql.execute_query(con, tree_sat_query)
 data = tree_sat
 
 #print(np.sqrt((tree_host['copx'][0] - tree_sat['copx'][0])**2 + (tree_host['copy'][0] - tree_sat['copy'][0])**2 + (tree_host['copz'][0] - tree_sat['copz'][0])**2))
-print((tree_host['copx'][0] - tree_sat['copx'][0]))
+#print((tree_host['copx'][0] - tree_sat['copx'][0]))
 
 
 # retrieving virial mass of the host
@@ -371,7 +371,7 @@ def moving_to_origin(host, sat, box, r):
 
 radius, time_z = moving_to_origin(tree_host, tree_sat, box_size, host_r_vir['r_vir'])
 
-print(time.time() - t, 'it took this many seconds')
+#print(time.time() - t, 'it took this many seconds')
 
 
 # calculating t_quench - t_infall
@@ -417,8 +417,8 @@ tiq, t_infall, t_quench, first_approach_r = t_infall_and_quench(host_r_vir['r_vi
 
 # print(t_infall,"infall time")
 # print(t_quench,'t_quench')
-print(tiq,'t_quench -  t_infall, Gyr')
-print(data['ms'][0],'M_solar @ z = 0')
+# print(tiq,'t_quench -  t_infall, Gyr')
+# # print(data['ms'][0],'M_solar @ z = 0')
 
 sat_mass = data['ms'][0]
 
@@ -453,7 +453,7 @@ else:
         with open("sim{1}/{0}/host_r_vir_{0}".format(host_index, sim_box), 'wb') as f1:
             pickle.dump(host_r_vir, f1, pickle.HIGHEST_PROTOCOL)
     except FileExistsError:
-        print("Directory ", dirName, " already exists")
+        print(" ")
 
 
     with open("sim{2}/{0}/sat_{1}".format(host_index,sat_index, sim_box), 'wb') as f2:

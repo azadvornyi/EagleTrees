@@ -55,7 +55,7 @@ host_query = "SELECT \
              and SH.MassType_DM > {1}".format(sim, host_mass)
 
 host_ids = sql.execute_query(con, host_query)
-print(len(host_ids))
+#print(len(host_ids))
 #print((host_ids['gid'][0])
 t = time.time()
 he_index = host_index
@@ -128,7 +128,7 @@ try:
     f = open("hostid_satnumber_{0}.txt".format(sim_box), "a")
     f.write("{0:.0f} {1:.0f} \n".format(host_index, sat_len ))
     f.close()
-    print(sat_len)
+    #print(sat_len)
 except TypeError as error:
     f = open("hostid_satnumber_{0}.txt".format(sim_box), "a")
     f.write("{0:.0f} 0 \n".format(host_index))
