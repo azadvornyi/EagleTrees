@@ -403,27 +403,27 @@ else:
 
 print(time.time() - t,"sec ")
 
-plt.plot(time_z, radius)
-plt.plot(times_Gyr(host_r_vir['z']), host_r_vir['r_vir']*0.0025,c = 'red')
-plt.ylabel('radius, (Mpc)')
-plt.hlines(first_approach_r,0,max(time_z))
-plt.vlines(t_infall,0, 1)
-plt.savefig('dist.pdf', format ='pdf')
-plt.clf()
-
-# #print(data['sns'])
-plt.plot(data['z'], data['copx'], '-r')
-plt.plot(data['z'], data['copy'], '-g')
-plt.plot(data['z'], data['copz'], '-b')
-plt.savefig('cop.pdf')
-
-plt.clf()
-plt.semilogy(times_Gyr(data['z']), data['ms'], '-k')
-plt.savefig('ms.pdf', format='pdf')
-
-plt.clf()
-plt.semilogy(times_Gyr(data['z']), data['ssfr']*1e9, '-r')
-plt.vlines(t_quench,0, 1)
-plt.savefig('ssfr.pdf', format='pdf')
+# plt.plot(time_z, radius)
+# plt.plot(times_Gyr(host_r_vir['z']), host_r_vir['r_vir']*0.0025,c = 'red')
+# plt.ylabel('radius, (Mpc)')
+# plt.hlines(first_approach_r,0,max(time_z))
+# plt.vlines(t_infall,0, 1)
+# plt.savefig('dist.pdf', format ='pdf')
+# plt.clf()
+#
+# # #print(data['sns'])
+# plt.plot(data['z'], data['copx'], '-r')
+# plt.plot(data['z'], data['copy'], '-g')
+# plt.plot(data['z'], data['copz'], '-b')
+# plt.savefig('cop.pdf')
+#
+# plt.clf()
+# plt.semilogy(times_Gyr(data['z']), data['ms'], '-k')
+# plt.savefig('ms.pdf', format='pdf')
+#
+# plt.clf()
+# plt.semilogy(times_Gyr(data['z']), data['ssfr']*1e9, '-r')
+# plt.vlines(t_quench,0, 1)
+# plt.savefig('ssfr.pdf', format='pdf')
 
 #plt.show()
