@@ -16,7 +16,7 @@ while read here; do
           F="$(cut -d' ' -f6 <<<"$i")"
           python3 sat_tracker.py $A $B $C $D $E $F 100 #insert [sat_tracker.py] instead of dummy1.py
       done
-done < hostid_100_rvir_33_.txt
+done < hostid_rvir_33_100.txt
 
 while read name; do
     for i in "${name[@]}"; do
