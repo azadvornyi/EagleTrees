@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
-M_h, m_s, t_i, t_q, sfr = np.loadtxt("data_plot_100.txt", unpack=True, usecols=( 2, 3, 4, 5, 6))
+M_h, m_s, t_i, t_q, sfr = np.loadtxt("data_plot_RefL0100N1504_old.txt", unpack=True, usecols=( 2, 3, 4, 5, 6))
 
 
 
