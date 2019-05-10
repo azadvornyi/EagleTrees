@@ -11,5 +11,9 @@
 # #
 # # print(len(host_r_vir['r_vir']))
 import numpy as np
+import pandas as pd
+
 n = np.loadtxt("hostid_satnumber_100.txt", unpack=True, usecols=(6,))
-print(np.sum(n))
+pd = pd.read_csv("hostid_satnumber_100.txt", sep='\s+')#, header=False)
+
+print(pd)

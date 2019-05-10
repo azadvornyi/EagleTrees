@@ -58,9 +58,9 @@ normal_sat_query= 'SELECT \
              WHERE \
              H.GalaxyID = {1:.0f} \
              and H.GroupID = FOF.GroupID \
-             and 0.0025*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_x  - (S.CentreOfPotential_x - FLOOR((S.CentreOfPotential_x+{2:.0f})/ {5:.0f}))) \
-             and 0.0025*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_y  - (S.CentreOfPotential_y - FLOOR((S.CentreOfPotential_y+{3:.0f})/ {5:.0f}))) \
-             and 0.0025*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_z  - (S.CentreOfPotential_z - FLOOR((S.CentreOfPotential_z+{4:.0f})/ {5:.0f}))) \
+             and 0.0033*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_x  - (S.CentreOfPotential_x - FLOOR((S.CentreOfPotential_x+{2:.0f})/ {5:.0f}))) \
+             and 0.0033*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_y  - (S.CentreOfPotential_y - FLOOR((S.CentreOfPotential_y+{3:.0f})/ {5:.0f}))) \
+             and 0.0033*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_z  - (S.CentreOfPotential_z - FLOOR((S.CentreOfPotential_z+{4:.0f})/ {5:.0f}))) \
              and S.Snapnum = 28 \
              and S.MassType_Star between 1E9 and 1E12'.format(sim, gid, dx, dy, dz, box_size)
 
@@ -152,7 +152,7 @@ tree_sat_query = 'SELECT \
 
 
 try:
-    with open("sim{0}/{1}/host_{1}".format(sim_box,host_index), 'rb') as f3:
+    with open("sim{0}/{1}/host_{1}".format(sim100,host_index), 'rb') as f3:
         tree_host = pickle.load(f3)
     #tree_host = np.load("sim{0}/{1}/host_{1}.npy".format(sim25,host_index))
 except FileNotFoundError:
@@ -193,7 +193,7 @@ host_r_vir_query = 'SELECT \
 #host_r_vir = sql.execute_query(con, host_r_vir_query)
 
 try:
-    with open("sim{0}/{1}/host_r_vir_{1}".format(sim_box,host_index), 'rb') as f5:
+    with open("sim{0}/{1}/host_r_vir_{1}".format(sim100,host_index), 'rb') as f5:
         host_r_vir = pickle.load(f5)
     #tree_host = np.load("sim{0}/{1}/host_{1}.npy".format(sim25,host_index))
 except FileNotFoundError:
@@ -296,7 +296,7 @@ def moving_to_origin(host, sat, box, r):
 
 
     for counter in range(len(distances)):
-        if distances[counter] < 0.0025 * r_vir[counter]:
+        if distances[counter] < 0.0033 * r_vir[counter]:
             first_approach = np.append(first_approach,distances[counter])
             t_infall = np.append(t_infall, time_[counter])
     distances = list(reversed(distances))
@@ -329,7 +329,7 @@ def t_infall_and_quench(r_vir, dist, time_dist, ssfr, gen_time, sat_time):
     t_infall = -1
     t_quench = -1
     for counter in range(len(interp_r)):
-        if interp_d[counter] < 0.0025 * interp_r[counter]:
+        if interp_d[counter] < 0.0033 * interp_r[counter]:
             first_approach = interp_d[counter-1]
             t_infall = precise_time_d[counter-1]
             break
@@ -367,7 +367,7 @@ if (tree_host['copx'][0] - tree_sat['copx'][0]) == 0:
 elif (t_quench or t_infall) == 0 :
     pass
 else:
-    f = open("data_plot_{0}.txt".format(sim_box), "a")
+    f = open("data_plot_{0}.txt".format(sim100), "a")
     f.write("{0:.0f} {1:.0f} {2} {3} {4} {5} {6}\n".format(host_index, sat_index, tree_host['mdm'][0], sat_mass,
                                                  t_infall, t_quench, data['ssfr'][0]))
     f.close()
@@ -375,7 +375,7 @@ else:
 
 this_sat_id = sat_index
 
-dirName = 'sim{1}/{0}'.format(host_index,sim_box)
+dirName = 'sim{1}/{0}'.format(host_index,sim100)
 
 # Create target directory & all intermediate directories if don't exists
 
@@ -387,15 +387,15 @@ else:
     try:
         os.makedirs(dirName)
         print("Directory ", dirName, " Created ")
-        with open("sim{1}/{0}/host_{0}".format(host_index, sim_box), 'wb') as f0:
+        with open("sim{1}/{0}/host_{0}".format(host_index, sim100), 'wb') as f0:
             pickle.dump(tree_host, f0, pickle.HIGHEST_PROTOCOL)
-        with open("sim{1}/{0}/host_r_vir_{0}".format(host_index, sim_box), 'wb') as f1:
+        with open("sim{1}/{0}/host_r_vir_{0}".format(host_index, sim100), 'wb') as f1:
             pickle.dump(host_r_vir, f1, pickle.HIGHEST_PROTOCOL)
     except FileExistsError:
         pass
 
 
-    with open("sim{2}/{0}/sat_{1}".format(host_index,sat_index, sim_box), 'wb') as f2:
+    with open("sim{2}/{0}/sat_{1}".format(host_index,sat_index, sim100), 'wb') as f2:
         pickle.dump(tree_sat, f2, pickle.HIGHEST_PROTOCOL)
 
 

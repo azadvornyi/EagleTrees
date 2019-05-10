@@ -64,9 +64,9 @@ normal_sat_query= 'SELECT \
              WHERE \
              H.GalaxyID = {1:.0f} \
              and H.GroupID = FOF.GroupID \
-             and 0.0025*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_x  - (S.CentreOfPotential_x - FLOOR((S.CentreOfPotential_x+{2:.0f})/ {5:.0f}))) \
-             and 0.0025*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_y  - (S.CentreOfPotential_y - FLOOR((S.CentreOfPotential_y+{3:.0f})/ {5:.0f}))) \
-             and 0.0025*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_z  - (S.CentreOfPotential_z - FLOOR((S.CentreOfPotential_z+{4:.0f})/ {5:.0f}))) \
+             and 0.0033*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_x  - (S.CentreOfPotential_x - FLOOR((S.CentreOfPotential_x+{2:.0f})/ {5:.0f}))) \
+             and 0.0033*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_y  - (S.CentreOfPotential_y - FLOOR((S.CentreOfPotential_y+{3:.0f})/ {5:.0f}))) \
+             and 0.0033*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_z  - (S.CentreOfPotential_z - FLOOR((S.CentreOfPotential_z+{4:.0f})/ {5:.0f}))) \
              and S.Snapnum = 28 \
              and S.MassType_Star between 1E9 and 1E12'.format(sim, gid, dx, dy, dz, box_size)
 
@@ -76,13 +76,13 @@ normal_sat_query= 'SELECT \
 
 sats_info = sql.execute_query(con, normal_sat_query)
 print(sats_info)
-# try:
-#     f = open("hostid_satnumber_{0}.txt".format(sim_box), "a")
-#     f.write("{0} {1} {2} {3} {4} {5} {6}\n".format(gid, fof, sub , dx, dy, dz, len(sats_info) ))
-#     f.close()
-#     print(len(sats_info))
-# except TypeError as error:
-#     pass
+try:
+    f = open("hostid_satnumber_rvir_33_{0}.txt".format(sim_box), "a")
+    f.write("{0} {1} {2} {3} {4} {5} {6}\n".format(gid, fof, sub , dx, dy, dz, len(sats_info) ))
+    f.close()
+    print(len(sats_info))
+except TypeError as error:
+    pass
 
 
 

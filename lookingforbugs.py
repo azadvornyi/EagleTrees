@@ -64,7 +64,7 @@ def edge_proximity(host_info,box_size): # copy this
     halfbox = box_size / 2
     for host in host_info:
         x, y, z = 0, 0, 0
-        r_vir = host['r_vir'] * 0.0025
+        r_vir = host['r_vir'] * 0.0033
         if (host['copx'] - r_vir < 0):
             x = halfbox
         elif (host['copx'] + r_vir > box_size):
@@ -95,8 +95,7 @@ host_on_edge = edge_proximity(host_ids, box_size)
 for i in range(len(host_ids["gid"])):
     if host_ids["sub"][i] == 0:
         try:
-            host_ids
-            f = open("hostid_{0}.txt".format(sim_box), "a")
+            f = open("hostid_rvir_33_{0}.txt".format(sim_box), "a")
             f.write("{0} {1} {2} {3} {4} {5} \n".format(host_on_edge["gid"][i],host_on_edge["fof"][i],host_on_edge["sub"][i],
                                                         host_on_edge["dx"][i],host_on_edge["dy"][i],host_on_edge["dz"][i]))
             f.close()
