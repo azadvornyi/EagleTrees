@@ -17,4 +17,6 @@ import pandas as pd
 # pd = pd.read_csv("hostid_satnumber_100.txt", sep='\s+')#, header=False)
 #
 # print(pd)
-print(np.log(np.exp(1)))
+a = np.array([2,4])
+b = np.array([2,2])
+print(a/b)

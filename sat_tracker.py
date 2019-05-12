@@ -12,7 +12,7 @@ import time
 from sys import argv
 
 sim100 = 'RefL0100N1504'
-sim25 = 'RefL0025N0376'
+sim25 = 'RecalL0025N0752'
 
 #============
 sim_box = int(argv[7])
@@ -68,7 +68,7 @@ normal_sat_query= 'SELECT \
              and 0.0033*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_y  - (S.CentreOfPotential_y - FLOOR((S.CentreOfPotential_y+{3:.0f})/ {5:.0f}))) \
              and 0.0033*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_z  - (S.CentreOfPotential_z - FLOOR((S.CentreOfPotential_z+{4:.0f})/ {5:.0f}))) \
              and S.Snapnum = 28 \
-             and S.MassType_Star between 1E9 and 1E12'.format(sim, gid, dx, dy, dz, box_size)
+             and S.MassType_Star between 1E8 and 1E12'.format(sim, gid, dx, dy, dz, box_size)
 
 
 #print( len(sats_info["Sgid"]))

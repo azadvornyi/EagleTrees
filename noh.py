@@ -8,7 +8,7 @@ import matplotlib as mpl
 mpl.use('TkAgg')
 
 sim100 = 'RefL0100N1504'
-sim25 = 'RefL0025N0376'
+sim25 = 'RecalL0025N0752'
 
 #============
 sim_box = int(argv[1])
