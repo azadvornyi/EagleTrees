@@ -4,7 +4,11 @@ from scipy import stats
 M_h, m_s, t_i, t_q, sfr = np.loadtxt("data_plot_RefL0100N1504_old.txt", unpack=True, usecols=( 2, 3, 4, 5, 6))
 
 
-
+logmassmin = 9
+logmassmax = 12
+dex = 0.25
+bin_num = (logmassmax - logmassmin)/dex + 1
+bin_range = np.linspace(9, 12, bin_num)
 
 keep_these = np.where(t_q != 14.134423953091941) #
 and_these = np.where((t_i<=t_q))
@@ -25,8 +29,10 @@ print("quenched after infall: {0} \nquenched before infall: {1}\n unquenched: {2
                                                                                 len(m_s[q_before_i]),len(m_s[unquenched]),len(m_s)))
 
 quench_timescale = t_q[c] - t_i[c]
-bin_means, bin_edges, binnumber = stats.binned_statistic( np.log10(m_s[c]),quench_timescale, statistic='median', bins=[np.log10(1e9),
-                            np.log10(10**9.5) ,np.log10(1e10),np.log10(10**10.5) ,np.log10(1e11), np.log10(10**11.5) ,np.log10(1e12)])
+# bin_means, bin_edges, binnumber = stats.binned_statistic( np.log10(m_s[c]),quench_timescale, statistic='median', bins=[np.log10(1e9),
+#                             np.log10(10**9.5) ,np.log10(1e10),np.log10(10**10.5) ,np.log10(1e11), np.log10(10**11.5) ,np.log10(1e12)])
+
+bin_means, bin_edges, binnumber = stats.binned_statistic( np.log10(m_s[c]),quench_timescale, statistic='median', bins=bin_range)
 
 print(bin_means,bin_edges, binnumber)
 bin_width = (bin_edges[1] - bin_edges[0])
