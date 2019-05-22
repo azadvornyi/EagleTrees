@@ -17,6 +17,6 @@ import pandas as pd
 # pd = pd.read_csv("hostid_satnumber_100.txt", sep='\s+')#, header=False)
 #
 # print(pd)
-a = np.array([2,4])
-b = np.array([2,2])
-print(a/b)
+
+bin_range = np.linspace(8, 12, 16+1)
+print(bin_range)

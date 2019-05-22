@@ -2,6 +2,7 @@ import eagleSqlTools as sql
 import numpy as np
 from sys import argv
 import matplotlib as mpl
+
 mpl.use('TkAgg')
 import matplotlib.pyplot as plt
 import time
@@ -11,15 +12,14 @@ import os
 import pickle
 import sys
 
-
-t= time.time()
+t = time.time()
 sim100 = 'RefL0100N1504'
 sim25 = 'RecalL0025N0752'
 
 sim_box = int(argv[8])
-#============
+# ============
 # sim = int(argv[3])  # set simulation here
-#============
+# ============
 
 if sim_box == 100:
     sim = sim100
@@ -32,11 +32,6 @@ else:
 
 con = sql.connect('twh176', password='tt408GS2')
 
-
-
-
-
-
 gid = int(argv[1])
 fof = int(argv[2])
 sub = int(argv[3])
@@ -45,9 +40,9 @@ dy = float(argv[5])
 dz = float(argv[6])
 sat_index = int(argv[7])  # select satellite here
 host_index = gid
-#print(sim, gid,dx,dy,dz,box_size,sat_index)
+# print(sim, gid,dx,dy,dz,box_size,sat_index)
 # satellite selection around a host at z = 0. Hosts close to the wall of the box are handled as well
-normal_sat_query= 'SELECT \
+normal_sat_query = 'SELECT \
              S.GalaxyID as Sgid, \
              H.GalaxyID as Hgid, \
              FOF.Group_R_Crit200 as r_vir \
@@ -67,7 +62,7 @@ normal_sat_query= 'SELECT \
 sats_info = sql.execute_query(con, normal_sat_query)
 
 sat_len = len(sats_info["Sgid"])
-#print(sat_len)
+# print(sat_len)
 # retrieving SubGroupNumber and FoF for a satellite
 fof_sub_query = \
     'SELECT \
@@ -111,14 +106,12 @@ tree_host_query = 'SELECT \
              PROG.Redshift asc, \
              PROG.MassType_Star desc'.format(sim, fof, sub)
 
-
-
 # print(sats_info['Sgid'][1])
 # print(int(fof_sub_info['fof']),'fof')
 
-#test_tree = sql.execute_query(con,tree_query_generator(sim1,fof_sub_test['fof'], fof_sub_test['sub'] ))
+# test_tree = sql.execute_query(con,tree_query_generator(sim1,fof_sub_test['fof'], fof_sub_test['sub'] ))
 #
-#print(test_tree)
+# print(test_tree)
 
 # Satellite tree query
 tree_sat_query = 'SELECT \
@@ -147,24 +140,22 @@ tree_sat_query = 'SELECT \
              PROG.Redshift asc, \
              PROG.MassType_Star desc'.format(sim, int(fof_sub_info['fof']), int(fof_sub_info['sub']))
 
-
-#building host and satellite trees
+# building host and satellite trees
 
 
 try:
-    with open("sim{0}/{1}/host_{1}".format(sim,host_index), 'rb') as f3:
+    with open("sim{0}/{1}/host_{1}".format(sim, host_index), 'rb') as f3:
         tree_host = pickle.load(f3)
-    #tree_host = np.load("sim{0}/{1}/host_{1}.npy".format(sim25,host_index))
+    # tree_host = np.load("sim{0}/{1}/host_{1}.npy".format(sim25,host_index))
 except FileNotFoundError:
     tree_host = sql.execute_query(con, tree_host_query)
-
 
 tree_sat = sql.execute_query(con, tree_sat_query)
 
 data = tree_sat
 
-#print(np.sqrt((tree_host['copx'][0] - tree_sat['copx'][0])**2 + (tree_host['copy'][0] - tree_sat['copy'][0])**2 + (tree_host['copz'][0] - tree_sat['copz'][0])**2))
-#print((tree_host['copx'][0] - tree_sat['copx'][0]))
+# print(np.sqrt((tree_host['copx'][0] - tree_sat['copx'][0])**2 + (tree_host['copy'][0] - tree_sat['copy'][0])**2 + (tree_host['copz'][0] - tree_sat['copz'][0])**2))
+# print((tree_host['copx'][0] - tree_sat['copx'][0]))
 
 
 # retrieving virial mass of the host
@@ -189,17 +180,14 @@ host_r_vir_query = 'SELECT \
              PROG.Redshift asc, \
              PROG.MassType_Star desc'.format(sim, fof, sub)
 
-
-#host_r_vir = sql.execute_query(con, host_r_vir_query)
+# host_r_vir = sql.execute_query(con, host_r_vir_query)
 
 try:
-    with open("sim{0}/{1}/host_r_vir_{1}".format(sim,host_index), 'rb') as f5:
+    with open("sim{0}/{1}/host_r_vir_{1}".format(sim, host_index), 'rb') as f5:
         host_r_vir = pickle.load(f5)
-    #tree_host = np.load("sim{0}/{1}/host_{1}.npy".format(sim25,host_index))
+    # tree_host = np.load("sim{0}/{1}/host_{1}.npy".format(sim25,host_index))
 except FileNotFoundError:
     host_r_vir = sql.execute_query(con, host_r_vir_query)
-
-
 
 
 # converting z to Gyr
@@ -212,7 +200,7 @@ def times_Gyr(z):
         t = (2 / (3 * H0 * np.sqrt(OmegaL))) * np.log(
             (np.sqrt(OmegaL * ((1 + z[i]) ** (-3))) + np.sqrt(OmegaL * ((1 + z[i]) ** (-3)) + OmegaM)) / np.sqrt(
                 OmegaM))
-        time_array = np.append(time_array,t*1000)
+        time_array = np.append(time_array, t * 1000)
     return time_array
 
 
@@ -224,13 +212,13 @@ def moving_to_origin(host, sat, box, r):
     t_infall = np.array([])
     r_vir = np.array([])
 
-    halfbox = box/2
+    halfbox = box / 2
     if len(host) > len(sat):
         for i in reversed(range(len(sat))):
             for j in reversed(range(len(host))):
 
                 if sat['z'][i] == host['z'][j]:
-                    a = 1/(1+host['z'][j])
+                    a = 1 / (1 + host['z'][j])
                     scaled_halfbox = halfbox * a
                     scaled_box = box * a
                     x = host['copx'][j] - sat['copx'][i]
@@ -254,10 +242,10 @@ def moving_to_origin(host, sat, box, r):
                     elif z > scaled_halfbox:
                         z = z - scaled_box
 
-                    dist = np.sqrt(x**2 + y**2 + z**2)
+                    dist = np.sqrt(x ** 2 + y ** 2 + z ** 2)
 
                     r_vir = np.append(r_vir, r[i])
-                    distances = np.append(distances,dist)
+                    distances = np.append(distances, dist)
                     time_ = np.append(time_, sat['z'][i])
     else:
         for i in reversed(range(len(host))):
@@ -294,10 +282,9 @@ def moving_to_origin(host, sat, box, r):
                     distances = np.append(distances, dist)
                     time_ = np.append(time_, host['z'][i])
 
-
     for counter in range(len(distances)):
         if distances[counter] < 0.0033 * r_vir[counter]:
-            first_approach = np.append(first_approach,distances[counter])
+            first_approach = np.append(first_approach, distances[counter])
             t_infall = np.append(t_infall, time_[counter])
     distances = list(reversed(distances))
     time_ = list(reversed(time_))
@@ -306,19 +293,30 @@ def moving_to_origin(host, sat, box, r):
     return distances, time_
 
 
-#print(tree_sat['ssfr'],'this is sat')
+# print(tree_sat['ssfr'],'this is sat')
 
 radius, time_z = moving_to_origin(tree_host, tree_sat, box_size, host_r_vir['r_vir'])
 
-#print(time.time() - t, 'it took this many seconds')
+
+# print(time.time() - t, 'it took this many seconds')
 
 
 # calculating t_quench - t_infall
 def t_infall_and_quench(r_vir, dist, time_dist, ssfr, gen_time, sat_time):
-    r_vir_func = interpolate.interp1d(gen_time, r_vir )
-    dist_func = interpolate.interp1d(time_dist, dist )
+    """
 
-    precise_time_d = np.linspace(min(time_dist),max(time_dist), 150)
+    :param r_vir: 1
+    :param dist: 2
+    :param time_dist: 3
+    :param ssfr: 5
+    :param gen_time:
+    :param sat_time:
+    :return:
+    """
+    r_vir_func = interpolate.interp1d(gen_time, r_vir)
+    dist_func = interpolate.interp1d(time_dist, dist)
+
+    precise_time_d = np.linspace(min(time_dist), max(time_dist), 150)
     precise_time = np.linspace(min(gen_time), max(gen_time), 150)
     precise_time_sat = np.linspace(min(sat_time), max(sat_time), 150)
 
@@ -330,52 +328,48 @@ def t_infall_and_quench(r_vir, dist, time_dist, ssfr, gen_time, sat_time):
     t_quench = -1
     for counter in range(len(interp_r)):
         if interp_d[counter] < 0.0033 * interp_r[counter]:
-            first_approach = interp_d[counter-1]
-            t_infall = precise_time_d[counter-1]
+            first_approach = interp_d[counter - 1]
+            t_infall = precise_time_d[counter - 1]
             break
 
-
-    ssfr_func = interpolate.interp1d(sat_time,ssfr)
+    ssfr_func = interpolate.interp1d(sat_time, ssfr)
     interp_ssfr = ssfr_func(precise_time_sat)
     for i in reversed(range(len(interp_ssfr))):
-        if interp_ssfr[i]*1e9>1e-2:
+        if interp_ssfr[i] * 1e9 > 1e-2:
             t_quench = precise_time[i]
             break
-        else:
-            pass
 
     t_iq = t_quench - t_infall
     if first_approach == -1:
         return 0, 0, 0, 0
-    else:
-        return t_iq, t_infall, t_quench, first_approach
+
+    return t_iq, t_infall, t_quench, first_approach
 
 
-tiq, t_infall, t_quench, first_approach_r = t_infall_and_quench(host_r_vir['r_vir'], radius,  time_z, tree_sat['ssfr'],
-                                                                times_Gyr(tree_host['z']),times_Gyr((tree_sat['z'])))
+tiq, t_infall, t_quench, first_approach_r = t_infall_and_quench(host_r_vir['r_vir'], radius, time_z, tree_sat['ssfr'],
+                                                                times_Gyr(tree_host['z']), times_Gyr((tree_sat['z'])))
 
 # print(t_infall,"infall time")
 # print(t_quench,'t_quench')
 # print(tiq,'t_quench -  t_infall, Gyr')
 # # print(data['ms'][0],'M_solar @ z = 0')
-
 sat_mass = data['ms'][0]
 
 # checking if the host became a satellite of itself
 if (tree_host['copx'][0] - tree_sat['copx'][0]) == 0:
     pass
-elif (t_quench or t_infall) == 0 :
+elif (t_quench or t_infall) == 0:
     pass
+# if not (tree_host['copx'][0] - tree_sat['copx'][0] == 0) and not ((t_quench or t_infall) == 0):
 else:
     f = open("data_plot_{0}.txt".format(sim), "a")
     f.write("{0:.0f} {1:.0f} {2} {3} {4} {5} {6}\n".format(host_index, sat_index, tree_host['mdm'][0], sat_mass,
-                                                 t_infall, t_quench, data['ssfr'][0]))
+                                                           t_infall, t_quench, data['ssfr'][0]))
     f.close()
-
 
 this_sat_id = sat_index
 
-dirName = 'sim{1}/{0}'.format(host_index,sim)
+dirName = 'sim{1}/{0}'.format(host_index, sim)
 
 # Create target directory & all intermediate directories if don't exists
 
@@ -387,21 +381,17 @@ else:
     try:
         os.makedirs(dirName)
         print("Directory ", dirName, " Created ")
-        with open("sim{1}/{0}/host_{0}".format(host_index, sim), 'wb') as f0:
+        with open("sim{1}/{0}/host_{0}".format(host_index, sim), 'wb+') as f0:
             pickle.dump(tree_host, f0, pickle.HIGHEST_PROTOCOL)
-        with open("sim{1}/{0}/host_r_vir_{0}".format(host_index, sim), 'wb') as f1:
+        with open("sim{1}/{0}/host_r_vir_{0}".format(host_index, sim), 'wb+') as f1:
             pickle.dump(host_r_vir, f1, pickle.HIGHEST_PROTOCOL)
     except FileExistsError:
         pass
 
-
-    with open("sim{2}/{0}/sat_{1}".format(host_index,sat_index, sim), 'wb') as f2:
+    with open("sim{2}/{0}/sat_{1}".format(host_index, sat_index, sim), 'wb+') as f2:
         pickle.dump(tree_sat, f2, pickle.HIGHEST_PROTOCOL)
 
-
-
-
-print(time.time() - t,"sec ")
+print(time.time() - t, "sec ")
 
 # plt.plot(time_z, radius)
 # plt.plot(times_Gyr(host_r_vir['z']), host_r_vir['r_vir']*0.0025,c = 'red')
@@ -426,4 +416,4 @@ print(time.time() - t,"sec ")
 # plt.vlines(t_quench,0, 1)
 # plt.savefig('ssfr.pdf', format='pdf')
 
-#plt.show()
+# plt.show()

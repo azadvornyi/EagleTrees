@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
 M_h, m_s, t_i, t_q, sfr = np.loadtxt("data_plot_RefL0100N1504.txt", unpack=True, usecols=( 2, 3, 4, 5, 6))
-#M_h, m_s, t_i, t_q, sfr = np.loadtxt("data_plot_RecalL0100N0752.txt", unpack=True, usecols=( 2, 3, 4, 5, 6))
+#M_h, m_s, t_i, t_q, sfr = np.loadtxt("data_plot_RecalL0025N0752.txt", unpack=True, usecols=( 2, 3, 4, 5, 6))
 
 
 logmassmin = 9
@@ -67,11 +67,11 @@ plt.ylabel("t_q - t_i [Gyr]")
 plt.xlabel("M_sat [M_sun]")
 
 plt.subplot(324)
-plt.hist(np.log(m_s[c]), bins=28)
+plt.hist(np.log(m_s[c]), bins=11)
 plt.xscale('log')
 plt.xlabel("M_sat [M_sun]")
 plt.ylabel("N")
-#==============
+#==============plot
 plt.subplot(325)
 plt.scatter(t_i[c], sfr[c]*1e9, s= 2, c= "blue")
 plt.ylabel("ssfr(z=0)  Gyr^-1 ")
@@ -88,5 +88,5 @@ plt.ylabel("Quenching timescale [Gyr]")
 plt.xlabel("M_sat [M_sun]")
 #plt.xscale('log')
 
-plt.savefig('3plots.pdf', format ='pdf')
+plt.savefig('3plots_100.pdf', format ='pdf')
 plt.show()

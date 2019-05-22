@@ -3,20 +3,20 @@
 
 
 
-#python3 lookingforbugs.py 25
-#
-#
-#while read here; do
-#    for i in "${here[@]}"; do
-#          A="$(cut -d' ' -f1 <<<"$i")"
-#          B="$(cut -d' ' -f2 <<<"$i")"
-#          C="$(cut -d' ' -f3 <<<"$i")"
-#          D="$(cut -d' ' -f4 <<<"$i")"
-#          E="$(cut -d' ' -f5 <<<"$i")"
-#          F="$(cut -d' ' -f6 <<<"$i")"
-#          python3 sat_tracker.py $A $B $C $D $E $F 25 #insert [sat_tracker.py] instead of dummy1.py
-#      done
-#done < hostid_rvir_33_25.txt
+python3 lookingforbugs.py 25
+
+
+while read here; do
+    for i in "${here[@]}"; do
+          A="$(cut -d' ' -f1 <<<"$i")"
+          B="$(cut -d' ' -f2 <<<"$i")"
+          C="$(cut -d' ' -f3 <<<"$i")"
+          D="$(cut -d' ' -f4 <<<"$i")"
+          E="$(cut -d' ' -f5 <<<"$i")"
+          F="$(cut -d' ' -f6 <<<"$i")"
+          python3 sat_tracker.py $A $B $C $D $E $F 25 #insert [sat_tracker.py] instead of dummy1.py
+      done
+done < hostid_rvir_33_25.txt
 
 while read name; do
     for i in "${name[@]}"; do

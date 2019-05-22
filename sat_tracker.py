@@ -45,15 +45,12 @@ dy = float(argv[5])
 dz = float(argv[6])
 
 
-
-
-
 # Handling hosts that are close to the sides of the box
 # copy this
 
 
 # satellite selection around a host at z = 0. Hosts close to the wall of the box are handled as well
-normal_sat_query= 'SELECT \
+normal_sat_query = 'SELECT \
              S.GalaxyID as Sgid, \
              H.GalaxyID as Hgid, \
              FOF.Group_R_Crit200 as r_vir \
