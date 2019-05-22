@@ -57,7 +57,7 @@ normal_sat_query = 'SELECT \
              and 0.0033*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_y  - (S.CentreOfPotential_y - FLOOR((S.CentreOfPotential_y+{3:.0f})/ {5:.0f}))) \
              and 0.0033*FOF.Group_R_Crit200 > ABS( H.CentreOfPotential_z  - (S.CentreOfPotential_z - FLOOR((S.CentreOfPotential_z+{4:.0f})/ {5:.0f}))) \
              and S.Snapnum = 28 \
-             and S.MassType_Star between 1E8 and 1E12'.format(sim, gid, dx, dy, dz, box_size)
+             and S.MassType_Star between 1E9 and 1E12'.format(sim, gid, dx, dy, dz, box_size)
 
 sats_info = sql.execute_query(con, normal_sat_query)
 
@@ -144,7 +144,7 @@ tree_sat_query = 'SELECT \
 
 
 try:
-    with open("sim{0}/{1}/host_{1}".format(sim, host_index), 'rb') as f3:
+    with open("sim{0}_v/{1}/host_{1}".format(sim, host_index), 'rb') as f3:
         tree_host = pickle.load(f3)
     # tree_host = np.load("sim{0}/{1}/host_{1}.npy".format(sim25,host_index))
 except FileNotFoundError:
@@ -161,6 +161,9 @@ data = tree_sat
 # retrieving virial mass of the host
 host_r_vir_query = 'SELECT \
              PROG.Redshift as z,\
+             PROG.Velocity_x as v_x,\
+             PROG.Velocity_y as v_y,\
+             PROG.Velocity_z as v_z,\
              FOF.Group_R_Crit200 as r_vir\
          FROM \
              {0}_Subhalo as PROG, \
@@ -183,11 +186,38 @@ host_r_vir_query = 'SELECT \
 # host_r_vir = sql.execute_query(con, host_r_vir_query)
 
 try:
-    with open("sim{0}/{1}/host_r_vir_{1}".format(sim, host_index), 'rb') as f5:
+    with open("sim{0}_v/{1}/host_r_vir_{1}".format(sim, host_index), 'rb') as f5:
         host_r_vir = pickle.load(f5)
     # tree_host = np.load("sim{0}/{1}/host_{1}.npy".format(sim25,host_index))
 except FileNotFoundError:
     host_r_vir = sql.execute_query(con, host_r_vir_query)
+
+
+
+sat_v_query = 'SELECT \
+             PROG.Redshift as z,\
+             PROG.Velocity_x as v_x,\
+             PROG.Velocity_y as v_y,\
+             PROG.Velocity_z as v_z\
+         FROM \
+             {0}_Subhalo as PROG, \
+             {0}_Subhalo as DES, \
+             {0}_Aperture as AP,\
+             {0}_FOF as FOF \
+         WHERE \
+             DES.SnapNum = 28 \
+             and FOF.GroupID = PROG.GroupID \
+             and DES.GroupNumber = {1:.0f} \
+             and DES.SubGroupNumber = {2:.0f} \
+             and PROG.GalaxyID between DES.GalaxyID and DES.TopLeafID \
+             and AP.ApertureSize = 100 \
+             and AP.GalaxyID = PROG.GalaxyID \
+         ORDER BY \
+             DES.MassType_Star desc, \
+             PROG.Redshift asc, \
+             PROG.MassType_Star desc'.format(sim, int(fof_sub_info['fof']), int(fof_sub_info['sub']))
+
+vel_sat = sql.execute_query(con, sat_v_query)
 
 
 # converting z to Gyr
@@ -282,10 +312,7 @@ def moving_to_origin(host, sat, box, r):
                     distances = np.append(distances, dist)
                     time_ = np.append(time_, host['z'][i])
 
-    for counter in range(len(distances)):
-        if distances[counter] < 0.0033 * r_vir[counter]:
-            first_approach = np.append(first_approach, distances[counter])
-            t_infall = np.append(t_infall, time_[counter])
+
     distances = list(reversed(distances))
     time_ = list(reversed(time_))
     time_ = times_Gyr(time_)
@@ -356,20 +383,27 @@ tiq, t_infall, t_quench, first_approach_r = t_infall_and_quench(host_r_vir['r_vi
 sat_mass = data['ms'][0]
 
 # checking if the host became a satellite of itself
+
+
+
+
 if (tree_host['copx'][0] - tree_sat['copx'][0]) == 0:
     pass
 elif (t_quench or t_infall) == 0:
     pass
 # if not (tree_host['copx'][0] - tree_sat['copx'][0] == 0) and not ((t_quench or t_infall) == 0):
 else:
-    f = open("data_plot_{0}.txt".format(sim), "a")
+    f = open("data_plot_{0}_with_v.txt".format(sim), "a")
     f.write("{0:.0f} {1:.0f} {2} {3} {4} {5} {6}\n".format(host_index, sat_index, tree_host['mdm'][0], sat_mass,
                                                            t_infall, t_quench, data['ssfr'][0]))
     f.close()
 
+
+
+
 this_sat_id = sat_index
 
-dirName = 'sim{1}/{0}'.format(host_index, sim)
+dirName = 'sim{1}_v/{0}'.format(host_index, sim)
 
 # Create target directory & all intermediate directories if don't exists
 
@@ -381,15 +415,17 @@ else:
     try:
         os.makedirs(dirName)
         print("Directory ", dirName, " Created ")
-        with open("sim{1}/{0}/host_{0}".format(host_index, sim), 'wb+') as f0:
+        with open("sim{1}_v/{0}/host_{0}".format(host_index, sim), 'wb+') as f0:
             pickle.dump(tree_host, f0, pickle.HIGHEST_PROTOCOL)
-        with open("sim{1}/{0}/host_r_vir_{0}".format(host_index, sim), 'wb+') as f1:
+        with open("sim{1}_v/{0}/host_r_vir_{0}".format(host_index, sim), 'wb+') as f1:
             pickle.dump(host_r_vir, f1, pickle.HIGHEST_PROTOCOL)
     except FileExistsError:
         pass
 
-    with open("sim{2}/{0}/sat_{1}".format(host_index, sat_index, sim), 'wb+') as f2:
+    with open("sim{2}_v/{0}/sat_{1}".format(host_index, sat_index, sim), 'wb+') as f2:
         pickle.dump(tree_sat, f2, pickle.HIGHEST_PROTOCOL)
+    with open("sim{2}_v/{0}/sat_vel_{1}".format(host_index, sat_index, sim), 'wb+') as f3:
+        pickle.dump(vel_sat, f3, pickle.HIGHEST_PROTOCOL)
 
 print(time.time() - t, "sec ")
 
