@@ -476,7 +476,7 @@ elif (t_quench or t_infall) == 0:
     pass
 # if not (tree_host['copx'][0] - tree_sat['copx'][0] == 0) and not ((t_quench or t_infall) == 0):
 else:
-    f = open("data_sat_sub_at_infall.txt".format(sim), "a")
+    f = open("data_sat_sub_at_infall_{0}.txt".format(sim), "a")
     f.write("{0:.0f} {1:.0f} {2} {3} {4} {5} \n".format(host_index, sat_index, sub_at_infall,
                                                            t_infall, t_quench, data['ssfr'][0]))
     f.close()
