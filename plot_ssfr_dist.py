@@ -23,12 +23,12 @@ from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                AutoMinorLocator)
 
 host_id = "13995967"
-host_id2 = "18737995" # host_id2 = "19634929"
+host_id2 = "19634929" # host_id2 = ""
 host_id3 = "14071649"
 
 sim = "RefL0100N1504"
 sat_id = 2
-sat_id2 = 35 #sat_id2 = 41
+sat_id2 = 41 #sat_id2 = 41
 sat_id3 = 2
 
 box_size = 100
@@ -523,7 +523,7 @@ ax4.set_xlim(tmin, tmax)
 axins = inset_axes(ax4, width="31.42%", height="50%",
                    bbox_to_anchor=(.5456, .46, .885, .9),
                    bbox_transform=ax4.transAxes, loc=3)
-axins.tick_params(direction='in', labelbottom=False)  #
+axins.tick_params(direction='in')  #, labelbottom=False
 axins.plot(times_Gyr(tree_sat3['z']), (tree_sat3['ssfr'] * 1e11), '-r')
 axins.set_xlim(8.5, 12)
 axins.set_ylim(-0.02 * 10 ** (-11) * 1e11, 2 * 10 ** (-11) * 1e11)
@@ -549,5 +549,5 @@ ax3.set_ylabel(r'$\mathtt{SSFR \ \ [yr^{-1}]}$')
 plt.subplots_adjust(hspace=0, wspace=0.33)
 
 # Do the plot code
-# plt.savefig('ssfr_dist.pdf', format='pdf', dpi=1200, pad_inches=0.1, bbox_inches='tight')
+plt.savefig('ssfr_dist.pdf', format='pdf', dpi=1200, pad_inches=0.1, bbox_inches='tight')
 plt.show()

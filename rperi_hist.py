@@ -13,7 +13,7 @@ from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                AutoMinorLocator)
 import sys
 
-Rperi_gid, Rperi_satn, Rperi,M_h, m_s, t_i, t_q, sfr = np.loadtxt("Rperi", unpack=True, usecols=(0,1,2, 3, 4, 5, 6,7))
+Rperi_gid, Rperi_satn, Rperi,M_h, m_s, t_i, t_q, sfr, m_sat_max = np.loadtxt("Rperi", unpack=True, usecols=(0,1,2, 3, 4, 5, 6,7, 8))
 
 # maxRperi = np.where(Rperi>0.9)[0]
 # print(Rperi_gid[maxRperi], Rperi_satn[maxRperi], Rperi[maxRperi])
@@ -36,10 +36,28 @@ percentile25 = np.percentile(Rperi, 25)
 percentile50 = np.percentile(Rperi, 50)
 percentile75 = np.percentile(Rperi, 75)
 
-# small_split = np.where(Rperi < percentile25)[0]
-small_split = np.where(Rperi <= percentile50)[0]
-large_split = np.where(Rperi>percentile50)[0]
-# large_split = np.where(Rperi > percentile75)[0]
+# plt.hist(Rperi, bins=30, color = 'grey')
+#
+# plt.ylabel('N')
+# plt.xlabel(r'$R_{peri} \ [cMpc]$')
+#
+# plt.vlines(percentile25, 0, 250, color='black')
+#
+# plt.vlines(percentile50, 0, 250, color='black')
+#
+# plt.vlines(percentile75, 0, 250, color='black')
+# plt.title("Pericentric approach distribution")
+# #plt.legend()
+# #plt.savefig('Rperi_distribution.pdf',format='pdf')
+# plt.savefig('plots_to_combine/Rperi_distribution.jpg',format='jpg',dpi=1200, pad_inches=0.1, bbox_inches='tight')
+# plt.show()
+# sys.exit()
+
+small_split = np.where(Rperi < percentile25)[0]
+large_split = np.where(Rperi > percentile75)[0]
+
+# small_split = np.where(Rperi <= percentile50)[0]
+# large_split = np.where(Rperi>percentile50)[0]
 
 print(percentile50)
 
@@ -48,9 +66,9 @@ quench_timescale_l = t_q[large_split] - t_i[large_split]
 # bin_means, bin_edges, binnumber = stats.binned_statistic( np.log10(m_s[c]),quench_timescale, statistic='median', bins=[np.log10(1e9),
 #                             np.log10(10**9.5) ,np.log10(1e10),np.log10(10**10.5) ,np.log10(1e11), np.log10(10**11.5) ,np.log10(1e12)])
 
-bin_means_s, bin_edges_s, binnumber_s = stats.binned_statistic(np.log10(m_s[small_split]), quench_timescale_s,
+bin_means_s, bin_edges_s, binnumber_s = stats.binned_statistic(np.log10(m_sat_max[small_split]), quench_timescale_s,
                                                                statistic='median', bins=bin_range)
-bin_means_l, bin_edges_l, binnumber_l = stats.binned_statistic(np.log10(m_s[large_split]), quench_timescale_l,
+bin_means_l, bin_edges_l, binnumber_l = stats.binned_statistic(np.log10(m_sat_max[large_split]), quench_timescale_l,
                                                                statistic='median', bins=bin_range)
 bin_width_s = (bin_edges_s[1] - bin_edges_s[0])
 bin_centers_s = bin_edges_s[1:] - bin_width_s / 2
@@ -67,17 +85,17 @@ bin_centers_l = bin_edges_l[1:] - bin_width_l / 2
 # #plt.hist(Rperi, bins = 28)
 # plt.show()
 
-bin_means75_s, bin_edges75_s, binnumber75_s = stats.binned_statistic(np.log10(m_s[small_split]), quench_timescale_s,
+bin_means75_s, bin_edges75_s, binnumber75_s = stats.binned_statistic(np.log10(m_sat_max[small_split]), quench_timescale_s,
                                                                      statistic=lambda x75_s: np.percentile(x75_s, 75),
                                                                      bins=bin_range)
-bin_means25_s, bin_edges25_s, binnumber25_s = stats.binned_statistic(np.log10(m_s[small_split]), quench_timescale_s,
+bin_means25_s, bin_edges25_s, binnumber25_s = stats.binned_statistic(np.log10(m_sat_max[small_split]), quench_timescale_s,
                                                                      statistic=lambda x25_s: np.percentile(x25_s, 25),
                                                                      bins=bin_range)
 
-bin_means75_l, bin_edges75_l, binnumber75_l = stats.binned_statistic(np.log10(m_s[large_split]), quench_timescale_l,
+bin_means75_l, bin_edges75_l, binnumber75_l = stats.binned_statistic(np.log10(m_sat_max[large_split]), quench_timescale_l,
                                                                      statistic=lambda x75_l: np.percentile(x75_l, 75),
                                                                      bins=bin_range)
-bin_means25_l, bin_edges25_l, binnumber25_l = stats.binned_statistic(np.log10(m_s[large_split]), quench_timescale_l,
+bin_means25_l, bin_edges25_l, binnumber25_l = stats.binned_statistic(np.log10(m_sat_max[large_split]), quench_timescale_l,
                                                                      statistic=lambda x25_l: np.percentile(x25_l, 25),
                                                                      bins=bin_range)
 # print(type(bin_means))
@@ -106,8 +124,8 @@ ax = plt.subplot2grid((3, 2), (0, 0), colspan=2, rowspan=2)
 
 ax5 = plt.subplot2grid((3, 2), (2, 0), colspan=2, rowspan=1)
 ax5.hist(np.log10(m_s[small_split]), bins=bin_edges_s, align='mid', color='#07575b',
-         label=r'$\mathtt{Q_1+Q_2}$', edgecolor='#003b46', linewidth=1.2,alpha = 0.65)
-ax5.hist(np.log10(m_s[large_split]), bins=bin_edges_s, align='mid', label=r'$\mathtt{Q_3+Q_4}$',
+         label=r'$\mathtt{Q_1}$', edgecolor='#003b46', linewidth=1.2,alpha = 0.65)
+ax5.hist(np.log10(m_s[large_split]), bins=bin_edges_s, align='mid', label=r'$\mathtt{Q_4}$',
          color='#66a5ad', edgecolor='#003b46', linewidth=1.2, alpha = 0.65)
 
 # plt.yscale('log')
@@ -164,13 +182,13 @@ ax.hlines(bin_means_l, bin_edges_l[:-1] + 0.01, bin_edges_l[1:] + 0.01, colors='
 
 ax.vlines(bin_centers_l + 0.01, bin_means25_l, bin_means75_l, colors='#66a5ad', lw=1, )
 
-ax.errorbar(1, 1, 1, 1, label=r'$\mathtt{Q_1+Q_2}$', c='#07575b', lw=1)
+ax.errorbar(1, 1, 1, 1, label=r'$\mathtt{Q_1}$', c='#07575b', lw=1)
 
-ax.errorbar(1, 1, 1, 1, label=r'$\mathtt{Q_3+Q_4}$', c='#66a5ad', lw=1)
+ax.errorbar(1, 1, 1, 1, label=r'$\mathtt{Q_4}$', c='#66a5ad', lw=1)
 
 ax.set_ylabel(r"$\mathtt{ \tau_q [Gyr]}$")
 # plt.plot((binnumber - 0.5) * bin_width, x_pdf, 'g.', alpha=0.5)
-ax5.set_xlabel(r"$\mathtt{log_{10}(M_{\bigstar}/M_{\odot}}) $")
+ax5.set_xlabel(r"$\mathtt{log_{10}( max(M_{\bigstar})/M_{\odot}}) $")
 # plt.xscale('log')
 ax.set_ylim(0, 8)
 ax2.set_xlim(8.9, 11.5)
@@ -188,7 +206,10 @@ ax5.tick_params(axis='y', which='minor', length=4, color='black', direction='in'
 ax5.tick_params(axis='y', which='major', direction='in', length=6, width=0.9, colors='black',
                 grid_color='black', grid_alpha=0.4)
 ax.legend(frameon=False)
+ax.set_title("QTD for pericentric approach")
 ax5.legend(frameon=False)
 plt.subplots_adjust(hspace=0, wspace=0.33)
-plt.savefig('qtd_Q1Q2_Q3Q4.pdf', format='pdf', dpi=1200, pad_inches=0.1, bbox_inches='tight')
+
+#plt.savefig('qtd_1234_peri_max_sat_m.pdf', format='pdf', dpi=1200, pad_inches=0.1, bbox_inches='tight')
+#plt.savefig('plots_to_combine/qtd_14_peri_max_sat_m.jpg', format='jpg', dpi=1200, pad_inches=0.1, bbox_inches='tight')
 plt.show()

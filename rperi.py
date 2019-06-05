@@ -25,18 +25,18 @@ from astropy.cosmology import z_at_value
 from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                AutoMinorLocator)
 
-host_id = "18893253"
+host_id = "18680975"
 
 
 sim = "RefL0100N1504"
-sat_id = 22
+sat_id = 4
 
 
 
 box_size = 100
 
 
-host_gid,sat_num,M_h, m_s, t_i, t_q, sfr = np.loadtxt("data_plot_RefL0100N1504.txt", unpack=True, usecols=(0,1,2, 3, 4, 5, 6))
+host_gid,sat_num,M_h, m_s, t_i, t_q, sfr = np.loadtxt("data_plot_RefL0100N1504_with_v.txt", unpack=True, usecols=(0,1,2, 3, 4, 5, 6))
 # M_h, m_s, t_i, t_q, sfr = np.loadtxt("data_plot_RecalL0100N0752.txt", unpack=True, usecols=( 2, 3, 4, 5, 6))
 
 n15 = np.where(M_h > 10 ** 15)
@@ -74,6 +74,8 @@ with open("sim{0}/{1}/host_{1}".format(sim, host_id), 'rb') as f2:
 
 with open("sim{0}/{1}/sat_{2}".format(sim, host_id, sat_id), 'rb') as f3:
     tree_sat = pickle.load(f3)
+
+
 
 
 
@@ -162,28 +164,9 @@ def moving_to_origin(host, sat, box, virial):
     vir_time = virial['z'][::-1]
     vir_r = virial['r_vir'][::-1]*0.0033
 
-    # distances1 = distances
-    # perihilion = distances1[0]
-    # counter = np.array([0])
-    # k = 1
-    # while k < len(time_)-1:
-    #     for m in range(len(vir_r)):
-    #         if vir_time[m]==time_[k]:
-    #             if distances[k-1] < perihilion < distances1[k+1]:
-    #                 perlist = np.append(perlist,perihilion)
-    #                 counter = np.append(counter, k)
-    #
-    #
-    #     k += 1
-    #
-    # distances = distances[::-1]
-    # time_ = time_[::-1]
-    #
-    # time_ = times_Gyr(time_)
-    # if perlist[0] >
-    # if len(perlist) == 0:
-    #     perlist = np.append(perlist,0)
-    # perihilion
+
+
+
     distances = distances * (1 + time_)
     distances = distances
     time_ = time_
@@ -199,15 +182,15 @@ def moving_to_origin(host, sat, box, virial):
 
 
 
-# radius, time_z, id, timeatid, virial_rad = moving_to_origin(tree_host, tree_sat, box_size, host_r_vir)
+radius, time_z, id, timeatid, virial_rad = moving_to_origin(tree_host, tree_sat, box_size, host_r_vir)
+
+peak, _ = sc.signal.find_peaks(-radius)
+print(peak)
+plt.plot(time_z,radius)
+#plt.plot(time_z, virial_rad)
+plt.scatter(time_z[id], radius[id])
+plt.show()
 #
-# peak, _ = sc.signal.find_peaks(-radius)
-# print(peak)
-# plt.plot(time_z,radius)
-# plt.plot(time_z, virial_rad)
-# plt.scatter(time_z[19], radius[id])
-# plt.show()
-# print(perihilion)
 #
 for i in small_split:
 
@@ -234,16 +217,11 @@ for i in small_split:
 
     if (pericenter_id != -1)  and (radius[pericenter_id] != radius[-1]):
 
-        # print(host_gid[i], sat_num[i], "host gid sat num")
-        # print(firstset,"first set")
-        #
-        # print(secondset,'secondset')
-        #
-        # print(pericenter_id,"pericenter id")
+
         rad = radius[pericenter_id]
 
         f = open("Rperi".format(sim), "a")
-        f.write("{0} {1} {2} {3} {4} {5} {6} {7}\n".format(int(host_gid[i]), int(sat_num[i]),rad,M_h[i], m_s[i], t_i[i], t_q[i], sfr[i]))
+        f.write("{0} {1} {2} {3} {4} {5} {6} {7} {8}\n".format(int(host_gid[i]), int(sat_num[i]),rad,M_h[i], m_s[i], t_i[i], t_q[i], sfr[i], np.max(tree_sat['ms'])))
         f.close()
 #
 

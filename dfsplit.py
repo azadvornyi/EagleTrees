@@ -6,6 +6,7 @@ from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
 import sys
 M_h, m_s, t_i, t_q, sfr = np.loadtxt("data_plot_RefL0100N1504.txt", unpack=True, usecols=(2, 3, 4, 5, 6))
 # M_h, m_s, t_i, t_q, sfr = np.loadtxt("data_plot_RecalL0100N0752.txt", unpack=True, usecols=( 2, 3, 4, 5, 6))
+M_hi, m_si = np.loadtxt("splitm", unpack=True, usecols=(0,1))
 
 n15 = np.where(M_h > 10 ** 15)
 print(len(M_h[n15]))
@@ -31,8 +32,8 @@ b = set((keep_these[0]))
 c = b.intersection(a)
 c = np.array(list(c))
 
-ratio = m_s[c]/M_h[c]
-
+ratio = m_si/M_hi
+print(len(ratio))
 # plt.hist(np.log10(ratio), bins=30)
 #
 # plt.ylabel('N')
@@ -46,10 +47,10 @@ percentile25 = np.percentile(ratio, 25)
 percentile50 = np.percentile(ratio, 50)
 percentile75 = np.percentile(ratio, 75)
 
-small_split = np.where(ratio < percentile25)[0]
-# small_split = np.where(ratio <= percentile50)[0]
-# large_split = np.where(ratio>percentile50)[0]
-large_split = np.where(ratio > percentile75)[0]
+# small_split = np.where(ratio < percentile25)[0]
+small_split = np.where(ratio <= percentile50)[0]
+large_split = np.where(ratio>percentile50)[0]
+# large_split = np.where(ratio > percentile75)[0]
 
 quench_timescale = t_q[c] - t_i[c]
 quench_timescale_s = t_q[small_split] - t_i[small_split]
@@ -107,8 +108,8 @@ ax = plt.subplot2grid((3, 2), (0, 0), colspan=2, rowspan=2)
 
 ax5 = plt.subplot2grid((3, 2), (2, 0), colspan=2, rowspan=1)
 ax5.hist(np.log10(m_s[small_split]), bins=bin_edges_s, align='mid', color='#07575b',
-         label=r'$\mathtt{Q_1}$', edgecolor='#003b46', linewidth=1.2, alpha = 0.65)
-ax5.hist(np.log10(m_s[large_split]), bins=bin_edges_s, align='mid', label=r'$\mathtt{Q_4}$',
+         label=r'$\mathtt{Q_1+Q_2}$', edgecolor='#003b46', linewidth=1.2, alpha = 0.65)
+ax5.hist(np.log10(m_s[large_split]), bins=bin_edges_s, align='mid', label=r'$\mathtt{Q_3 +Q_4}$',
          color='#66a5ad', edgecolor='#003b46', linewidth=1.2, alpha = 0.65)
 
 # plt.yscale('log')
@@ -165,9 +166,9 @@ ax.hlines(bin_means_l, bin_edges_l[:-1] + 0.01, bin_edges_l[1:] + 0.01, colors='
 
 ax.vlines(bin_centers_l + 0.01, bin_means25_l, bin_means75_l, colors='#66a5ad', lw=1, )
 
-ax.errorbar(1, 1, 1, 1, label=r'$\mathtt{Q_1}$', c='#07575b', lw=1)
+ax.errorbar(1, 1, 1, 1, label=r'$\mathtt{Q_1+Q_2}$', c='#07575b', lw=1)
 
-ax.errorbar(1, 1, 1, 1, label=r'$\mathtt{Q_4}$', c='#66a5ad', lw=1)
+ax.errorbar(1, 1, 1, 1, label=r'$\mathtt{Q_3+Q_4}$', c='#66a5ad', lw=1)
 
 ax.set_ylabel(r"$\mathtt{ \tau_q [Gyr]}$")
 # plt.plot((binnumber - 0.5) * bin_width, x_pdf, 'g.', alpha=0.5)
@@ -192,5 +193,5 @@ ax.legend(frameon=False)
 ax5.legend(frameon=False)
 ax.set_label(r'$\mathtt{Split by M_{*}/M_{host}}$')
 plt.subplots_adjust(hspace=0, wspace=0.33)
-#plt.savefig('qtd_df_Q1_Q4 .pdf', format='pdf', dpi=1200, pad_inches=0.1, bbox_inches='tight')
+#plt.savefig('qtd_df_Q1Q2_Q3Q4_infall.pdf', format='pdf', dpi=1200, pad_inches=0.1, bbox_inches='tight')
 plt.show()

@@ -26,6 +26,14 @@ b = set((keep_these[0]))
 c = b.intersection(a)
 c = np.array(list(c))
 
+
+m9 = np.where((m_s >= 10**9) & (m_s <10**9.5))[0]
+m95 = np.where((m_s >= 10**9.5) & (m_s <10**10))[0]
+m10 = np.where((m_s >= 10**10) & (m_s <10**10.5))[0]
+m105 = np.where((m_s >= 10**10.5) & (m_s <10**11))[0]
+m11 = np.where((m_s >= 10**11))[0]
+
+
 print("quenched after infall: {0} \nquenched before infall: {1}\n unquenched: {2}\n total {3}".format(len(c),
                                                                                 len(m_s[q_before_i]),len(m_s[unquenched]),len(m_s)))
 
