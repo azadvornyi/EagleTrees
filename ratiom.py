@@ -25,10 +25,10 @@ from astropy.cosmology import z_at_value
 from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                AutoMinorLocator)
 
-host_id = "18680975"
+host_id = "21109760"
 
 sim = "RefL0100N1504"
-sat_id = 4
+sat_id = 1
 
 box_size = 100
 
@@ -63,17 +63,23 @@ c = b.intersection(a)
 # small_split = np.array(list(small_split))
 small_split = c
 #print(small_split)
+plt.rc('text', usetex=False)
+with open("sim{0}/{1}/host_r_vir_{1}".format(sim, host_id), 'rb') as f11:
+    host_r_vir = pickle.load(f11)
 
-with open("sim{0}/{1}/host_r_vir_{1}".format(sim, host_id), 'rb') as f1:
-    host_r_vir = pickle.load(f1)
+with open("sim{0}/{1}/host_{1}".format(sim, host_id), 'rb') as f21:
+    tree_host = pickle.load(f21)
 
-with open("sim{0}/{1}/host_{1}".format(sim, host_id), 'rb') as f2:
-    tree_host = pickle.load(f2)
+with open("sim{0}/{1}/sat_{2}".format(sim, host_id, sat_id), 'rb') as f31:
+    tree_sat = pickle.load(f31)
 
-with open("sim{0}/{1}/sat_{2}".format(sim, host_id, sat_id), 'rb') as f3:
-    tree_sat = pickle.load(f3)
+with open("sim{0}/{1}/sat_sub_{2}".format(sim, host_id, sat_id), 'rb') as f41:
+    tree_sat_sub = pickle.load(f41)
+print(len(tree_sat_sub['z']),len(tree_sat_sub['sub']))
+for i in range(len(tree_sat_sub['sub'])):
+    print(type(tree_sat_sub['sub'][i]))
 
-
+sub_tree = tree_sat_sub['sub']
 def times_Gyr(z):
     H0 = 67.77
     OmegaM = 0.307
@@ -99,7 +105,8 @@ def flag(scale_factor, box_, sat_pos, host_pos):
 
 
 # calculating distance between the host and the satellite
-def moving_to_origin(host, sat, box, virial, host_mass, sat_mass):
+def moving_to_origin(host, sat, box, virial, sub):
+
     distances = np.array([])
     time_ = np.array([])
     perilist = np.array([])
@@ -154,58 +161,84 @@ def moving_to_origin(host, sat, box, virial, host_mass, sat_mass):
                     time_ = np.append(time_, host['z'][i])
 
     vir_time = virial['z'][::-1]
-    vir_r = virial['r_vir'][::-1] * 0.0033
-    host_mass = host_mass[::-1]
-    sat_mass = sat_mass[::-1]
+    vir_r = virial['r_vir'][::-1]  * 0.0033
+    vir_r = vir_r*(1 + vir_time)
+    #sub = sub[::-1]
+    sub1 = np.zeros(30)
+    # host_mass = host_mass[::-1]
+    # sat_mass = sat_mass[::-1]
+    host_mass = np.zeros(30)
+    sat_mass = np.zeros(30)
     distances = distances * (1 + time_)
     distances = distances
+    # if sub is not None:
 
     if len(sat) > len(host):
         for i in range(len(vir_time)):
             for j in range(len(time_)):
                 if vir_time[i] == time_[j]:
                     if distances[j] < vir_r[i]:
-                        return host_mass[i],sat_mass[j], vir_time[i]
-    else:
+                        return host_mass[i],sat_mass[j], vir_time[i],sub1[j],distances[j],distances,vir_r, vir_time,time_
+    elif len(host) > len(sat):
         for i in range(len(time_)):
             for j in range(len(vir_time)):
                 if vir_time[j] == time_[i]:
                     if distances[i] < vir_r[j]:
-                        return host_mass[i],sat_mass[i], vir_time[j]
+                        return host_mass[i],sat_mass[i], vir_time[j],sub1[i],distances[i],distances,vir_r,vir_time,time_
+
+        # else:
+        #     return -1, -1, -1, -1, -1, [-1], [-1], [-1], [-1]
 
 
+def passfunc(sub_T):
+    K =1
+    return K
+k = passfunc(sub_tree)
+def a(z):
+    return 1 / (1 + z)
 
+print(type(np.array(None)))
 
+sub_tree = np.array(sub_tree)
+host_m, sat_m, zed,sub_n,d,rad,vir_rad, vir_time,time= moving_to_origin(tree_host, tree_sat, box_size, host_r_vir,
+                                                                        sub_tree)
+print(sub_n)
+print(tree_sat_sub['sub'])
+plt.plot(times_Gyr(vir_time),vir_rad/max(vir_rad))
+plt.plot(times_Gyr(time),rad/max(vir_rad))
+plt.scatter(times_Gyr([zed]),d/max(vir_rad))
 
-
-
-host_m, sat_m, zed = moving_to_origin(tree_host, tree_sat, box_size, host_r_vir, tree_host['mdm'], tree_sat['ms'])
-
-print(host_m, sat_m, zed)
+#plt.show()
+print(host_m, sat_m, zed,sub_n)
 print(tree_host['mdm'],"mdm")
 print(tree_sat['ms'],"ms")
 
 print(tree_host['z'],'z_host')
 print(tree_sat['z'],'z_sat')
 
-# for i in small_split:
-#
-#     with open("sim{0}/{1}/host_r_vir_{1}".format(sim, host_id), 'rb') as f1:
-#         host_r_vir = pickle.load(f1)
-#
-#     with open("sim{0}/{1}/host_{1}".format(sim, int(host_gid[i])), 'rb') as f2:
-#         tree_host = pickle.load(f2)
-#
-#     with open("sim{0}/{1}/sat_{2}".format(sim, int(host_gid[i]), int(sat_num[i])), 'rb') as f3:
-#         tree_sat = pickle.load(f3)
-#     #print(host_gid[i], sat_num[i])
-#     host_m, sat_m, zed = moving_to_origin(tree_host, tree_sat, box_size, host_r_vir, tree_host['mdm'], tree_sat['ms'])
-#
-#
-#     f = open("splitm".format(sim), "a")
-#     f.write(
-#         "{0} {1} \n".format( host_m, sat_m))
-#     f.close()
+sys.exit()
+
+for i in small_split:
+
+    with open("sim{0}/{1}/host_r_vir_{1}".format(sim, host_id), 'rb') as f1:
+        host_r_vir = pickle.load(f1)
+
+    with open("sim{0}/{1}/host_{1}".format(sim, int(host_gid[i])), 'rb') as f2:
+        tree_host = pickle.load(f2)
+
+    with open("sim{0}/{1}/sat_{2}".format(sim, int(host_gid[i]), int(sat_num[i])), 'rb') as f3:
+        tree_sat = pickle.load(f3)
+    with open("sim{0}/{1}/sat_sub_{2}".format(sim, int(host_id), int(sat_id)), 'rb') as f4:
+        tree_sat_sub = pickle.load(f4)
+    print(host_gid[i], sat_num[i])
+    host_m, sat_m, zed, sub_n, d, rad,vir_rad, vir_time,time = moving_to_origin(tree_host, tree_sat, box_size, host_r_vir, tree_host['mdm'], tree_sat['ms'], tree_sat_sub['sub'])
+
+    if sub_n != -1:
+        f = open("the_ultimate_data_15rvir_{0}".format(sim), "a")
+        f.write(
+            "{0} {1} {2} {3} {4} {5} {6} {7} {8} \n".format(int(host_gid[i]),int(sat_num[i]), tree_host['mdm'][0], max(tree_sat['ms']), t_i[i], t_q[i],
+                                t_q[i]-t_i[i], sfr[i], sub_n))
+    f.close()
 # # #
 
 

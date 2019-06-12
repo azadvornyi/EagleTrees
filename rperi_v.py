@@ -60,7 +60,8 @@ nuq = len(m_s) - len(m_s[keep_these]) + len(m_s[and_these])
 a = set((and_these[0]))
 b = set((keep_these[0]))
 c = b.intersection(a)
-small_hosts = np.where(M_h <= 1e14)
+#small_hosts = np.where(M_h <= 1e14)
+small_hosts = np.where(M_h <= 1e15)
 small_hosts_set = set((small_hosts[0]))
 small_split = c.intersection(small_hosts_set)
 small_split = np.array(list(small_split))
@@ -242,7 +243,7 @@ for i in small_split:
         rad = radius[pericenter_id]
         v_peri = v_rel[pericenter_id]
         mhost = host_m[pericenter_id]
-        f = open("Rperi_1".format(sim), "a")
+        f = open("Data_plot_100_with_max_mass".format(sim), "a")
         f.write("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10}\n".format(int(host_gid[i]), int(sat_num[i]),rad,M_h[i], m_s[i], t_i[i],
                                                                         t_q[i], sfr[i], np.max(tree_sat['ms']), v_peri, mhost))
         f.close()

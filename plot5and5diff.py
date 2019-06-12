@@ -197,31 +197,33 @@ radius, time_z, virial_ = moving_to_origin(tree_host, tree_sat, box_size, host_r
 # plot it
 fig = plt.figure(figsize=(14, 12))
 for i in np.arange(1,20):
-    ins_1 = 'inspection_z1'
-    ins_2 = 'inspection_z2'
+    ins_1 = '1'
+    ins_2 = '2'
+    ins = ins_1
     sat_flag = i
     try:
-        with open("inspection_z2/{0}/host_r_vir_{0}".format(sat_flag), 'rb') as f1:
+        with open("inspection_z{1}/{0}/host_r_vir_{0}".format(sat_flag,ins), 'rb') as f1:
             host_r_vir = pickle.load(f1)
 
-        with open("inspection_z2/{0}/host_{0}".format(sat_flag), 'rb') as f2:
+        with open("inspection_z{1}/{0}/host_{0}".format(sat_flag,ins), 'rb') as f2:
             tree_host = pickle.load(f2)
 
-        with open("inspection_z2/{0}/sat_{0}".format(sat_flag), 'rb') as f3:
+        with open("inspection_z{1}/{0}/sat_{0}".format(sat_flag,ins), 'rb') as f3:
             tree_sat = pickle.load(f3)
 
-        with open("inspection_z2/{0}/property1_sat_{0}".format(sat_flag), 'rb') as f4:
+        with open("inspection_z{1}/{0}/property1_sat_{0}".format(sat_flag,ins), 'rb') as f4:
             p_sat_1 = pickle.load(f4)
 
-        with open("inspection_z2/{0}/property2_sat_{0}".format(sat_flag), 'rb') as f5:
+        with open("inspection_z{1}/{0}/property2_sat_{0}".format(sat_flag,ins), 'rb') as f5:
             p_sat_2 = pickle.load(f5)
         alpha = 0.65
-        if i <12:
+        if i <12:  #12 for z =2
             print(t_q[i-1]-t_i[i-1])
             color = 'red'
         else:
             color = 'blue'
             print(t_q[i-1] - t_i[i-1])
+        radius, time_z, virial_ = moving_to_origin(tree_host, tree_sat, box_size, host_r_vir)
         time_y = times_Gyr(tree_sat['z'])
         plt.subplot(431) # ssfr
         plt.semilogy(time_y-t_i[i-1],tree_sat['ssfr'], c= color,  alpha =alpha)
@@ -235,13 +237,13 @@ for i in np.arange(1,20):
 
         plt.subplot(433) # M_star
         plt.plot(time_y-t_i[i-1],tree_sat['ms'], c= color, alpha =alpha)
-        plt.ylabel("M_star")
+        plt.ylabel(r"$M_{star}$")
         plt.yscale('log')
 
 
         plt.subplot(434) # m_gas
         plt.plot(time_y-t_i[i-1],p_sat_1['m_g'], c= color, alpha =alpha)
-        plt.ylabel("M_gas")
+        plt.ylabel(r"$M_{gas}$")
         plt.yscale('log')
 
 
@@ -252,17 +254,17 @@ for i in np.arange(1,20):
 
         plt.subplot(436) # half_dm
         plt.plot(time_y-t_i[i-1],p_sat_1['half_dm'], c= color, alpha =alpha)
-        plt.ylabel("half mass R_dm ")
+        plt.ylabel(r"$half mass R_{dm} $")
 
 
         plt.subplot(437) #half_stars
         plt.plot(time_y-t_i[i-1],p_sat_2['half_star'], c= color, alpha =alpha)
-        plt.ylabel("half mass R_star")
+        plt.ylabel(r"$half mass R_{star}$")
 
 
         plt.subplot(438) #half_gas
         plt.plot(time_y-t_i[i-1],p_sat_2['half_gas'], c= color, alpha =alpha)
-        plt.ylabel("half mass R_gas")
+        plt.ylabel(r"$half mass R_{gas}$")
         plt.yscale('log')
 
 
@@ -271,18 +273,18 @@ for i in np.arange(1,20):
         plt.ylabel("stellar v dispersion")
 
 
-        # plt.subplot(4,3,10) #thermal energy
-        # plt.plot(time_z,radius)
-        # plt.plot(time_z,virial_)
-        # plt.ylabel("distances ")
+        plt.subplot(4,3,12) #thermal energy
+        plt.plot(time_z-t_i[i-1],radius, c= color, alpha =alpha)
+        #plt.plot(time_z,virial_)
+        plt.ylabel("distances ")
         plt.subplot(4,3,10)
 
-        plt.text(0.5,0.8, r'$ z\approx 2, \  3<t_{i}/Gyr<4  $',
+        plt.text(0.5,0.8, r'$ z\approx 2, \  5.5<t_{i}/Gyr<6.5  $',
          rotation=0,
          horizontalalignment='center',
          verticalalignment='top',
          multialignment='center')
-        plt.text(0.5, 0.3, r'$ \tau_{i} \approx 2.5 \ and  \ 8.7 \ Gyr  $',
+        plt.text(0.5, 0.3, r'$ \tau_{i} \approx 3.5 \ and  \ 8 \ Gyr  $',
                  rotation=0,
                  horizontalalignment='center',
                  verticalalignment='top',
@@ -292,7 +294,7 @@ for i in np.arange(1,20):
                  horizontalalignment='center',
                  verticalalignment='top',
                  multialignment='center')
-
+        plt.tick_params(labelbottom=False, labelleft=False)
         plt.subplot(4,3,11) #thermal energy
         plt.plot(time_y-t_i[i-1],p_sat_1['ste'], c= color, alpha = alpha)
         plt.ylabel("specific thermal energy")
@@ -302,5 +304,5 @@ for i in np.arange(1,20):
     except FileNotFoundError:
         pass
 
-plt.savefig('plots_to_combine/10in1_z2.pdf', format='pdf', dpi=1200, pad_inches=0.1, bbox_inches='tight')
+plt.savefig('plots20.06.19/10in1_z1.pdf', format='pdf', dpi=1200, pad_inches=0.1, bbox_inches='tight')
 plt.show()

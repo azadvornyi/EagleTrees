@@ -208,7 +208,8 @@ except FileNotFoundError:
 
 sat_v_query = 'SELECT \
              PROG.Redshift as z,\
-             PROG.SubGroupNumber as sub \
+             PROG.HalfMassRad_Star as half_star, \
+             PROG.MassType_Gas as m_g\
          FROM \
              {0}_Subhalo as PROG, \
              {0}_Subhalo as DES, \
@@ -227,7 +228,7 @@ sat_v_query = 'SELECT \
              PROG.Redshift asc, \
              PROG.MassType_Star desc'.format(sim, int(fof_sub_info['fof']), int(fof_sub_info['sub']))
 
-sat_sub_tree = sql.execute_query(con, sat_v_query)
+tree_sat_mg = sql.execute_query(con, sat_v_query)
 
 
 # converting z to Gyr
@@ -317,7 +318,7 @@ def moving_to_origin_sub(host, sat, box, virial,sat_sub):
 
 # print(tree_sat['ssfr'],'this is sat')
 
-sub_at_infall = moving_to_origin_sub(tree_host, tree_sat, box_size, host_r_vir, sat_sub_tree['sub'])
+#sub_at_infall = moving_to_origin_sub(tree_host, tree_sat, box_size, host_r_vir, sat_sub_tree['sub'])
 
 def moving_to_origin(host, sat, box, r):
     distances = np.array([])
@@ -412,7 +413,7 @@ radius, time_z = moving_to_origin(tree_host, tree_sat, box_size, host_r_vir['r_v
 
 
 # calculating t_quench - t_infall
-def t_infall_and_quench(r_vir, dist, time_dist, ssfr, gen_time, sat_time):
+def t_infall_and_quench(r_vir, dist, time_dist, ssfr, gen_time, sat_time,mstar,mgas):
     """
 
     :param r_vir: 1
@@ -425,6 +426,8 @@ def t_infall_and_quench(r_vir, dist, time_dist, ssfr, gen_time, sat_time):
     """
     r_vir_func = interpolate.interp1d(gen_time, r_vir)
     dist_func = interpolate.interp1d(time_dist, dist)
+    mgs_func = interpolate.interp1d(sat_time, mgas)
+    mstar_func = interpolate.interp1d(sat_time, mstar)
 
     precise_time_d = np.linspace(min(time_dist), max(time_dist), 150)
     precise_time = np.linspace(min(gen_time), max(gen_time), 150)
@@ -432,14 +435,20 @@ def t_infall_and_quench(r_vir, dist, time_dist, ssfr, gen_time, sat_time):
 
     interp_r = r_vir_func(precise_time)
     interp_d = dist_func(precise_time_d)
+    interp_g = mgs_func(precise_time_sat)
+    interp_m = mstar_func(precise_time_sat)
 
     first_approach = -1
     t_infall = -1
     t_quench = -1
+    g_infall = -1
+    m_infall = -1
     for counter in range(len(interp_r)):
         if interp_d[counter] < 0.0033 * interp_r[counter]:
             first_approach = interp_d[counter - 1]
             t_infall = precise_time_d[counter - 1]
+            g_infall = interp_g[counter - 1]
+            m_infall = interp_m[counter - 1]
             break
 
     ssfr_func = interpolate.interp1d(sat_time, ssfr)
@@ -453,13 +462,18 @@ def t_infall_and_quench(r_vir, dist, time_dist, ssfr, gen_time, sat_time):
     if first_approach == -1:
         return 0, 0, 0, 0
 
-    return t_iq, t_infall, t_quench, first_approach
+    return t_iq, t_infall, t_quench, first_approach, g_infall, m_infall, g_infall / m_infall
 
 
-tiq, t_infall, t_quench, first_approach_r = t_infall_and_quench(host_r_vir['r_vir'], radius, time_z, tree_sat['ssfr'],
-                                                                times_Gyr(tree_host['z']), times_Gyr((tree_sat['z'])))
+tiq, t_infall, t_quench, first_approach_r,g_i, m_i, gm_i = t_infall_and_quench(host_r_vir['r_vir'], radius, time_z, tree_sat['ssfr'],
+                                                                times_Gyr(tree_host['z']), times_Gyr((tree_sat['z'])),
+                                                                tree_sat['ms'], tree_sat_mg['m_g'])
 
-# print(t_infall,"infall time")
+
+
+# print(times_Gyr(tree_sat['z']))
+# print(t_infall, np.log10(g_i), np.log10(m_i))
+# print(np.log10(tree_sat['ms']))
 # print(t_quench,'t_quench')
 # print(tiq,'t_quench -  t_infall, Gyr')
 # # print(data['ms'][0],'M_solar @ z = 0')
@@ -470,20 +484,28 @@ tiq, t_infall, t_quench, first_approach_r = t_infall_and_quench(host_r_vir['r_vi
 
 
 
+
 if (tree_host['copx'][0] - tree_sat['copx'][0]) == 0:
     pass
 elif (t_quench or t_infall) == 0:
     pass
 # if not (tree_host['copx'][0] - tree_sat['copx'][0] == 0) and not ((t_quench or t_infall) == 0):
 else:
-    f = open("data_sat_sub_at_infall_{0}.txt".format(sim), "a")
-    f.write("{0:.0f} {1:.0f} {2} {3} {4} {5} \n".format(host_index, sat_index, sub_at_infall,
+    f = open("data_mgas_halfrad_{0}.txt".format(sim), "a")
+    f.write("{0:.0f} {1:.0f} {2} {3} {4} {5} {6} {7} {8}\n".format(host_index, sat_index ,g_i, m_i, gm_i, tree_sat_mg['half_star'][0],
                                                            t_infall, t_quench, data['ssfr'][0]))
     f.close()
 
+if (tree_host['copx'][0] - tree_sat['copx'][0]) == 0:
+    pass
+# elif (t_quench or t_infall) == 0 :
+#     pass
+else:
+    with open("sim{2}_v/{0}/sat_mg_{1}".format(host_index, sat_index, sim), 'wb+') as f99:
+        pickle.dump(tree_sat_mg, f99, pickle.HIGHEST_PROTOCOL)
 
 
-print((host_index, sat_index, sub_at_infall, t_infall, t_quench, data['ssfr'][0]))
+#print((host_index, sat_index, sub_at_infall, t_infall, t_quench, data['ssfr'][0]))
 
 
 print(time.time() - t, "sec ")

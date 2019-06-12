@@ -21,14 +21,12 @@ p_ram = v_peri
 # print(Rperi_gid[maxRperi], Rperi_satn[maxRperi], Rperi[maxRperi])
 # print(max(Rperi))
 
-# plt.hist(np.log10(p_ram), bins=30)
-#
-# plt.ylabel('N')
-# plt.xlabel(r'$p{ram} \ [(km/s)^2 M_{\star}^{2/3} cMpc^{-2}]$')
-# plt.savefig('p_ram_distribution.pdf',format='pdf')
-# plt.show()
-# sys.exit()
-
+# c=set((np.where([m_s>0])[0]
+m9 = np.where((m_sat_max >= 10**9) & (m_sat_max <10**9.5))[0]
+m95 = np.where((m_sat_max >= 10**9.5) & (m_sat_max <10**10))[0]
+m10 = np.where((m_sat_max >= 10**10) & (m_sat_max <10**10.5))[0]
+m105 = np.where((m_sat_max >= 10**10.5) & (m_sat_max <10**11))[0]
+m11 = np.where((m_sat_max >= 10**11))[0]
 
 logmassmin = 9
 logmassmax = 12
@@ -47,12 +45,27 @@ percentile75 = np.percentile(p_ram, 75)
 # plt.ylabel('N')
 # plt.xlabel(r'$v_{peri} \ [km/s]$')
 #
-# plt.vlines(np.sqrt(percentile25), 0, 125, color='black')
+plt.vlines(np.sqrt(percentile25), 0, 125, color='white')
+
+plt.vlines(np.sqrt(percentile50), 0, 125, color='white')
+
+plt.vlines(np.sqrt(percentile75), 0, 125, color='white')
+
+label_m = [r'$M_{\star} \rm /M_{\odot} =[9,9.5]$',r'$ M_{\star} \rm /M_{\odot} =[9.5,10]$', r'$M_{\star} \rm /M_{\odot}=[10,10.5]$', r'$M_{\star} \rm /M_{\odot}=[10.5,11]$',r'$M_{\star} \rm /M_{\odot}=[11,12]$']
+
+v_peri_d = [np.sqrt(v_peri[m9]),np.sqrt(v_peri[m95]),np.sqrt(v_peri[m10]),np.sqrt(v_peri[m105]),np.sqrt(v_peri[m11])]
+
+plt.hist((v_peri_d), bins=30,stacked=True, color=['#032F64','#034698','#006CBB','#28A7EA','#45BDEE'],label=label_m,histtype='stepfilled')
 #
-# plt.vlines(np.sqrt(percentile50), 0, 125, color='black')
-#
-# plt.vlines(np.sqrt(percentile75), 0, 125, color='black')
-# plt.title("v_peri  distribution")
+plt.ylabel(r'$\rm N$')
+plt.xlabel(r'$\rm v_{peri} \ [km/s ]$')
+plt.legend()
+plt.savefig('plots20.06.19/v_peri_distribution.pdf',format='pdf',dpi=1200, pad_inches=0.1, bbox_inches='tight')
+plt.show()
+sys.exit()
+
+
+
 # #plt.legend()
 # #plt.savefig('Rperi_distribution.pdf',format='pdf')
 # #plt.savefig('plots_to_combine/v2_distribution.jpg',format='jpg',dpi=1200, pad_inches=0.1, bbox_inches='tight')

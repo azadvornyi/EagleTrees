@@ -25,11 +25,7 @@ from astropy.cosmology import z_at_value
 from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                AutoMinorLocator)
 
-host_id = "18680975"
 
-
-sim = "RefL0100N1504"
-sat_id = 4
 
 
 
@@ -66,6 +62,12 @@ small_split = c.intersection(small_hosts_set)
 small_split = np.array(list(small_split))
 print(small_split)
 
+host_id = "20414028"
+
+
+sim = "RefL0100N1504"
+sat_id = 10
+
 with open("sim{0}/{1}/host_r_vir_{1}".format(sim, host_id), 'rb') as f1:
     host_r_vir = pickle.load(f1)
 
@@ -76,9 +78,10 @@ with open("sim{0}/{1}/sat_{2}".format(sim, host_id, sat_id), 'rb') as f3:
     tree_sat = pickle.load(f3)
 
 
+with open("sim{0}/{1}/sat_sub_{2}".format(sim, host_id, sat_id), 'rb') as f4:
+    tree_sat_sub = pickle.load(f4)
 
-
-
+print(tree_sat_sub['sub'])
 
 
 
@@ -169,29 +172,32 @@ def moving_to_origin(host, sat, box, virial):
 
     distances = distances * (1 + time_)
     distances = distances
-    time_ = time_
+    time_zed = time_
     time_ = times_Gyr(time_)
     peak, _ = sc.signal.find_peaks(-distances)
     for i in peak:
         r_vir = vir_r[i]
         s = distances[i]
         if distances[i]<vir_r[i]:
-            return distances, time_, i, time_[i], vir_r
+            return distances, time_, i, time_[i], vir_r, time_zed
 
-    return distances, time_, -1, -1, -1
+    return distances, time_, -1, -1, -1, -1
 
+def a(z):
+    return 1 / (1 + z)
 
-
-radius, time_z, id, timeatid, virial_rad = moving_to_origin(tree_host, tree_sat, box_size, host_r_vir)
-
+radius, time_z, id, timeatid, virial_rad, zed = moving_to_origin(tree_host, tree_sat, box_size, host_r_vir)
+plt.rc('text', usetex=False)
 peak, _ = sc.signal.find_peaks(-radius)
 print(peak)
 plt.plot(time_z,radius)
-#plt.plot(time_z, virial_rad)
-plt.scatter(time_z[id], radius[id])
+plt.plot(times_Gyr(host_r_vir['z'][::-1]), (host_r_vir['r_vir'][::-1]*0.0033)/a(host_r_vir['z'][::-1]))
+#plt.plot(time_z[id], radius[id])
+
 plt.show()
 #
 #
+sys.exit()
 for i in small_split:
 
     with open("sim{0}/{1}/host_r_vir_{1}".format(sim, host_id), 'rb') as f1:
